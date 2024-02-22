@@ -1,0 +1,82 @@
+<div class="formContainer">
+
+    <div class="loginForm" *ngIf="signUpFlag()">
+
+        <form [formGroup]="loginDetails" (ngSubmit)="onSignIn()">
+
+
+            <div class="d-flex flex-column align-items-center mt-3">
+                <h3>Sign In</h3>
+
+                <div class="text-danger" *ngIf="showError()">
+                    Incorrect Email or Password.
+                </div>
+
+                <div class="form-group py-4 col-sm-8 col-12">
+
+                    <div>
+                        <input type="text" class="form-control" formControlName="email"
+                            placeholder="Organization Email">
+                    </div>
+
+                </div>
+
+
+                <div class="form-group pb-4 col-sm-8 col-12">
+
+                    <div>
+                        <input type="password" class="form-control" formControlName="pass" placeholder="Password">
+
+                    </div>
+
+                </div>
+                <button class="btn btn-success green mb-4 col-sm-8 col-12">Sign In</button>
+
+                <a class="link signInAs" (click)="changeSignUpAs()">Sign in as User</a>
+
+                <div>
+                    Dont have an Account? <a class="link signInAs" (click)="goToRegister()">Sign Up</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="loginForm" *ngIf="!signUpFlag()">
+
+        <form [formGroup]="loginDetails" (ngSubmit)="onSignIn()">
+
+
+            <div class="d-flex flex-column align-items-center mt-3">
+                <h3>Sign In</h3>
+                <div class="text-danger" *ngIf="showError()">
+                    Incorrect Email or Password.
+                </div>
+
+                <div class="form-group py-4 col-sm-8 col-12">
+
+                    <div>
+                        <input type="text" class="form-control" formControlName="email" placeholder="User Email">
+                    </div>
+
+                </div>
+
+
+                <div class="form-group pb-4 col-sm-8 col-12">
+
+                    <div>
+                        <input type="password" class="form-control" formControlName="pass" placeholder="Password">
+
+                    </div>
+
+                </div>
+                <button class="btn btn-success green mb-4 col-sm-8 col-12">Sign In</button>
+
+                <a class="link signInAs" (click)="changeSignUpAs()">Sign in as Organization</a>
+
+                <div>
+                    Dont have an Account? <a class="link signInAs" (click)="goToRegister()">Sign Up</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

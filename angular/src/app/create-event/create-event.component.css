@@ -1,0 +1,47 @@
+.formContainer {
+    /* width: 100%; */
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
+}
+
+input.ng-invalid.ng-touched {
+    border: 1px solid rgba(255, 0, 0, 1);
+}
+
+input:focus {
+    border: 1px blue solid;
+}
+
+small {
+    font-size: 13px;
+    color: rgba(255, 0, 0, 1);
+}
+
+
+
+.eventForm {
+    margin: 100px;
+    border: 1px solid #95c095;
+
+    border-radius: 20px;
+    width: 800px;
+
+    padding: 30px;
+}
+
+
+.green {
+    background-color: rgb(0, 161, 0);
+    border-radius: 20px;
+    color: white;
+    /* width: 150px; */
+}
+
+
+
+@media only screen and (max-width:576px) {
+    .eventForm {
+        margin: 100px 30px;
+    }
+}

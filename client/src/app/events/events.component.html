@@ -1,0 +1,53 @@
+<div class="container">
+
+    <div class=" parentbox">
+
+
+        <div *ngIf="showPastEvents()" class="row   my-2 py-4 flex-wrap  listBox">
+
+            @for(event of this.navigateService.pel; track event){
+            <div class="col-auto">
+
+                <app-event [eventName]="event['eventName']" [location]="event['location']" [date]="event['eventDate']"
+                    [startTime]="event['startTime']" [endTime]="event['endTime']" [seats]="event['seats']"
+                    [eventId]="event['id']" [showJoinButton]="false" [showRemoveButton]=true></app-event>
+            </div>
+            }
+            @empty{
+
+            <p>No Past Events to show.</p>
+            }
+        </div>
+
+        <div *ngIf="showUpcomingEvents()" class="row   my-2 py-4 flex-wrap  listBox">
+
+
+            @for(event of this.navigateService.uel; track event){
+            <app-event [eventName]="event['eventName']" [date]="event['eventDate']" [startTime]="event['startTime']"
+                [endTime]="event['endTime']" [location]="event['location']" [seats]="event['seats']"
+                [eventId]="event['id']" [showJoinButton]=false [showRemoveButton]=true
+                [showEditButton]=true></app-event>
+            }
+            @empty{
+
+            <p>No Upcoming Events to show.</p>
+            }
+        </div>
+
+
+        <div *ngIf="showOngoingEvents()" class="row   my-2 py-4 flex-wrap  listBox">
+
+
+
+            @for(event of this.navigateService.oel; track event){
+            <app-event [eventName]="event['eventName']" [date]="event['eventDate']" [startTime]="event['startTime']"
+                [endTime]="event['endTime']" [seats]="event['seats']" [eventId]="event['id']" [showJoinButton]="false"
+                [showRemoveButton]="true" [showEditButton]="true"></app-event>
+            }
+            @empty{
+
+            <p>No Ongoing Events to show.</p>
+            }
+        </div>
+    </div>
+</div>

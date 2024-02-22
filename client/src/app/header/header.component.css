@@ -1,0 +1,9 @@
+.headBorder {
+    border-bottom: 1px solid rgb(184, 184, 184);
+}
+
+.green {
+    background-color: #00a100;
+    border-radius: 20px;
+    color: white;
+}

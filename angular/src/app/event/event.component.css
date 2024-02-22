@@ -1,0 +1,53 @@
+.green {
+
+    background-color: rgb(0, 161, 0);
+    border-radius: 20px;
+    color: white;
+    /* width: 150px; */
+
+}
+
+h5{
+    display: inline-block;
+}
+
+.card {
+    border-radius: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    /* box-shadow: 10px 10px 10px 11px rgba(0, 0, 0, 0.2); */
+}
+
+.card img {
+    border-radius: 40px 40px 0 0;
+}
+
+
+.red {
+    background-color: rgb(191, 35, 35);
+    border-radius: 20px;
+    color: white;
+
+}
+
+.d-flex {
+    justify-content: space-between;
+}
+
+.yellow {
+    background-color: rgb(202, 222, 51);
+    border-radius: 20px;
+    color: white;
+
+}
+
+
+.card-body{
+    margin: 10px 20px;
+}
+
+
+@media only screen and (max-width:861px) {
+    .card {
+        width: 100%;
+    }
+}

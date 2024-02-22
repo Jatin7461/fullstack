@@ -1,0 +1,159 @@
+{
+  "users": [
+    {
+      "id": "9025",
+      "name": "kai",
+      "email": "kai@gmail",
+      "pass": "kai",
+      "events": [
+        "2d0d",
+        "89f0",
+        "8773",
+        "0ed9",
+        "7a89"
+      ]
+    },
+    {
+      "id": "1c31",
+      "name": "jatin",
+      "email": "jg@gmail",
+      "pass": "jg123",
+      "events": [
+        "7081",
+        "4bb5",
+        "2eb6"
+      ]
+    },
+    {
+      "id": "be5a",
+      "name": "",
+      "email": "",
+      "pass": "",
+      "events": []
+    },
+    {
+      "id": "9a28",
+      "name": "",
+      "email": "",
+      "pass": "",
+      "events": []
+    },
+    {
+      "id": "4b9a",
+      "name": "Jatin Gandhi",
+      "email": "jatin@gmail",
+      "pass": "jatin",
+      "events": []
+    },
+    {
+      "id": "5c94",
+      "name": "Jatin ",
+      "email": "jg@gmail.com",
+      "pass": "jg123",
+      "events": []
+    }
+  ],
+  "organizations": [
+    {
+      "id": "6321",
+      "name": "Cognizant",
+      "email": "cts@gmail",
+      "pass": "cts"
+    },
+    {
+      "id": "71d4",
+      "name": "Amazon",
+      "email": "am@gmail.com",
+      "pass": "a123"
+    },
+    {
+      "id": "09d1",
+      "name": "",
+      "email": "",
+      "pass": ""
+    },
+    {
+      "id": "e5f8",
+      "name": "",
+      "email": "",
+      "pass": ""
+    },
+    {
+      "id": "cde5",
+      "name": "",
+      "email": "asdf",
+      "pass": ""
+    },
+    {
+      "id": "7d61",
+      "name": "Microsoft",
+      "email": "microsoft@gmail.com",
+      "pass": "mic"
+    },
+    {
+      "id": "720e",
+      "name": "CTS",
+      "email": "cts@gmail.com",
+      "pass": "123"
+    },
+    {
+      "id": "1bdb",
+      "name": "cts",
+      "email": "cts@yahoo",
+      "pass": "cts123"
+    },
+    {
+      "id": "9430",
+      "name": "siddartha",
+      "email": "sidu@mail",
+      "pass": "1234"
+    }
+  ],
+  "events": [
+    {
+      "company": "",
+      "eventName": "Football",
+      "eventDate": "2024-01-24",
+      "location": "Sector-22, Chandigarh",
+      "startTime": "00:50",
+      "endTime": "05:50",
+      "id": "7c12"
+    },
+    {
+      "id": "2eb6",
+      "company": "",
+      "eventName": "Cricket",
+      "eventDate": "2024-01-23",
+      "location": "Panchkula",
+      "startTime": "13:12",
+      "endTime": "17:12"
+    },
+    {
+      "id": "96d6",
+      "company": "Microsoft",
+      "eventName": "Microsoft Event",
+      "eventDate": "2024-01-24",
+      "location": "pkl",
+      "startTime": "15:16",
+      "endTime": "17:16"
+    },
+    {
+      "id": "c1bd",
+      "company": "Cognizant",
+      "eventName": "Charity Event",
+      "eventDate": "2024-01-30",
+      "location": "Delhi",
+      "startTime": "10:23",
+      "endTime": "01:23"
+    },
+    {
+      "id": "c290",
+      "company": "Cognizant",
+      "eventName": "Football",
+      "eventDate": "2024-01-31",
+      "location": "DLF, Hyderabad",
+      "startTime": "23:13",
+      "endTime": "01:13"
+    }
+  ]
+}
