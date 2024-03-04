@@ -7,12 +7,13 @@ import { NavigateService } from '../navigate.service';
   templateUrl: './company.component.html',
   styleUrl: './company.component.css'
 })
-export class CompanyComponent implements OnInit{
-  constructor(private navigateService:NavigateService,private router:Router){
+export class CompanyComponent implements OnInit {
+  constructor(private navigateService: NavigateService, private router: Router) {
 
   }
   ngOnInit(): void {
     // throw new Error('Method not implemented.');
+    console.log("onnnn")
     this.companyName.set(this.navigateService.companyName())
   }
 
@@ -22,7 +23,7 @@ export class CompanyComponent implements OnInit{
   onPastEvents() {
     this.navigateService.onPastEvents();
   }
-  
+
   //executes when upcoming events is clicked
   onUpcomingEvents() {
     this.navigateService.onUpcomingEvents();
@@ -32,10 +33,10 @@ export class CompanyComponent implements OnInit{
   onOngoingEvents() {
     this.navigateService.onOngoingEvents();
   }
-  
-  
+
+
   //executes when create new event is clicked
-  createNewEvent(){
+  createNewEvent() {
     this.navigateService.editEvent.set(false);
     this.router.navigate(['create-event'])
   }

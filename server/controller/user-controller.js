@@ -1,5 +1,3 @@
-const exp = require('express');
-const userApp = exp.Router();
 const bcryptjs = require('bcryptjs');
 
 const jwt = require('jsonwebtoken')
@@ -31,6 +29,40 @@ const getEmail = async (req, res, next) => {
 }
 
 
+//user login code
+const userLogin = async (req, res) => {
+    let userData = req.body, email = userData.email, password = userData.password;
+
+    if (!email || !password) {
+        return res.send({ message: "Incomplete Credentials" })
+    }
+
+    let userFound = await User.findOne({ email: email })
+
+
+    if (!userFound) {
+        return res.status(404).send({ message: "No user found" })
+    }
+
+    let passwordMatch = await bcryptjs.compare(password, userFound.password)
+
+    console.log(passwordMatch)
+
+    if (!passwordMatch) {
+        return res.send({ message: "Invalid password" })
+    }
+
+
+    const jwtToken = jwt.sign({ email: email }, "abcdefgh", { expiresIn: "30m" })
+
+    res.send({ message: "User Found", token: "Bearer " + jwtToken, payload: userFound })
+
+
+
+}
+
+
+
 const getUserWithId = async (req, res, next) => {
 
 
@@ -49,37 +81,7 @@ const getUserWithId = async (req, res, next) => {
 }
 
 
-userApp.get('/users', async (req, res, next) => {
 
-    // const usersCollection = req.app.get('usersCollection')
-
-    try {
-
-
-        let users = await User.find();
-        console.log(users)
-
-        res.status(200).send({ message: "users", payload: users })
-    }
-    catch (err) {
-        // next(err)
-        next()
-    }
-
-})
-
-
-userApp.get('/users/:userId', async (req, res) => {
-
-    const userId = Number(req.params.userId);
-    console.log(typeof (userId))
-    // const usersCollection = req.app.get('usersCollection')
-
-    let user = await User.findOne({ userId: userId })
-
-    res.status(200).send({ message: "single user", payload: user })
-
-})
 
 
 const createUser = async (req, res) => {
@@ -108,76 +110,18 @@ const createUser = async (req, res) => {
     }
 }
 
-// userApp.post('/users', async (req, res) => {
-
-//     // const usersCollection = req.app.get("usersCollection");
-//     const user = req.body;
-//     console.log(user)
-//     if (!user.name || !user.pass || !user.email) {
-//         return res.send({ message: "Incomplete user data" })
-//     }
 
 
-//     let userFromDb = await User.findOne({ name: user.name });
-//     console.log(userFromDb)
-//     if (userFromDb !== null) {
-//         res.status(200).send({ message: "User already exists" })
-//     }
-//     else {
-
-//         let hashedPassword = await bcryptjs.hash(user.pass, 5)
-//         user.password = hashedPassword
-
-//         await User.create(user)
-//         res.status(200).send({ message: "new user created" })
-//     }
+// userApp.get('/protected', verifyToken, (req, res) => {
+//     res.send({ message: "access to protected granted" })
 // })
 
-
-userApp.post('/user-login', async (req, res) => {
-    let userCred = req.body;
-
-    let user = await User.findOne({ name: userCred.name });
-    if (user === null) {
-        res.status(404).send({ message: "invalid user" });
-    }
-    else {
-        let result = await bcryptjs.compare(userCred.password, user.password)
-
-
-        if (!result) {
-            res.status(404).send({ message: "Invalid password" })
-        }
-        else {
-            let signedToken = jwt.sign({ name: user.name }, 'abcdefgh', { expiresIn: 30 });
-            res.status(200).send({ message: "login successfull", token: signedToken, user: user })
-        }
-
-    }
-})
-
-
-userApp.get('/protected', verifyToken, (req, res) => {
-    res.send({ message: "access to protected granted" })
-})
-
-
-userApp.put('/users/:id', async (req, res) => {
-
-
-    const user = req.body
-    let dbRes = await User.updateOne({ userId: user.userId }, { $set: { ...user } })
-
-    console.log(dbRes);
-
-    res.status(200).send({ message: "User Updated" });
-
-})
 
 
 const updateUser = async (req, res, next) => {
     const user = req.body
-    let dbRes = await User.updateOne({ userId: user.userId }, { $set: { ...user } })
+    console.log('user', user)
+    let dbRes = await User.updateOne({ _id: user._id }, { $set: { ...user } })
 
     // console.log(dbRes);
 
@@ -185,25 +129,8 @@ const updateUser = async (req, res, next) => {
 }
 
 
-userApp.delete('/users/:userId', async (req, res, next) => {
-
-    try {
-        let userId = Number(req.params.userId);
-        console.log(userId)
 
 
-
-        let deleteOp = await User.deleteOne({ userId: userId })
-        res.send({ message: "user deleted", payload: deleteOp })
-    }
-    catch (err) {
-        next(err)
-    }
-
-})
-
-
-module.exports = { userApp, getEmail, createUser, getUserWithId, updateUser };
-
+module.exports = { getEmail, createUser, getUserWithId, updateUser, userLogin };
 
 

@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { DataService } from '../data.service';
 
 @Component({
@@ -17,6 +18,7 @@ export class UserComponent implements OnInit {
   upcomingEvents = false;
 
   dataService = inject(DataService)
+  router = inject(Router)
 
   ngOnInit(): void {
     this.userEvents = this.dataService.userEvents
@@ -24,6 +26,11 @@ export class UserComponent implements OnInit {
 
     this.dataService.getUserWithId(this.dataService.userId()).subscribe({
       next: (res) => {
+
+        if (res.message === "Unauthorised access") {
+          this.router.navigate(['/home'])
+          return;
+        }
 
         console.log('res after joining', res)
 

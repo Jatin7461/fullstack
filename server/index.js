@@ -33,6 +33,10 @@ function errHandler(err, req, res, next) {
 app.use(errHandler)
 
 
+app.use((req, res, next) => {
+    res.sendFile(path.join(__dirname,'../angular/dist/angular/browser/index.html'))
+})
+
 app.listen(4000, () => {
     console.log("listenting on port", 4000)
 })

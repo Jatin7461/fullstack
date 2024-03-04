@@ -186,7 +186,6 @@ export class EventComponent implements OnInit {
 
         //store events array in a temp variable
         let arrWithEventIds = res.payload.events;
-
         //check if event id already exists in the array, i.e if the event is already joined or not
         let eventExists = arrWithEventIds.find((eventId: any) => {
           return eventId === id;

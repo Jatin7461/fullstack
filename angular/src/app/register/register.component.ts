@@ -25,6 +25,10 @@ export class RegisterComponent implements OnInit {
   userPassRequired: boolean = false;
   userPassConfirmRequired: boolean = false;
 
+
+  file:File;
+  fileName:String='';
+
   constructor(private navigateService: NavigateService, private dataService: DataService, private router: Router) { }
   ngOnInit(): void {
     this.signUpAs = this.navigateService.signUpAs
@@ -54,11 +58,21 @@ export class RegisterComponent implements OnInit {
 
   changeSignUpAs() {
     this.navigateService.changeSignUpAs();
+    console.log(this.signUpFlag());    
   }
 
   onSignUp() {
     this.emailExists = false;
     let userEvents: any = []
+
+    let formData = new FormData();
+    
+
+
+
+
+
+
     let { name, email, pass, confirmPass } = this.SignUpDetails.value;
     console.log(this.SignUpDetails.value);
     if (this.signUpAs() === 'Organization') {
@@ -190,6 +204,16 @@ export class RegisterComponent implements OnInit {
     })
 
 
+
+  }
+
+  //this method receives file content, read and make it ready for preview
+  onChange(file: File){
+
+    if(file){
+      this.fileName = file.name;
+      this.file = file;
+    }
 
   }
 

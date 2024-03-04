@@ -42,6 +42,7 @@ export class NavigateService {
   signUpFlag = signal(true);
 
   changeSignUpAs() {
+    console.log('first called')
     if (this.signUpFlag()) {
 
       this.signUpAs.set("User")
@@ -51,8 +52,10 @@ export class NavigateService {
 
       this.signUpAs.set("Organization")
     }
+    console.log('second called')
 
     this.signUpFlag.set(!this.signUpFlag());
+    console.log('third called', this.signUpFlag())
   }
 
 
@@ -60,15 +63,15 @@ export class NavigateService {
     if (this.signUpAs() === "Organization") {
 
 
-      this.dataService.getOrgs(email).subscribe({
+      this.dataService.loginOrg({ email, pass }).subscribe({
         next: (res) => {
           console.log('res is : ', res)
           console.log(email, pass)
-          if (!res.payload || !email || !pass) {
+          if (!res.payload) {
             this.signInError.set(true);
           }
           else {
-
+            localStorage.setItem('token',res.token)
             this.companyName.set(res.payload.name);
             this.signInError.set(false);
             this.showLogout = true;
@@ -86,13 +89,19 @@ export class NavigateService {
     }
     else {
 
-      this.dataService.getUsers(email).subscribe({
+      this.dataService.userLogin({ email, password: pass }).subscribe({
         next: (res) => {
 
           console.log('res is', res)
-          if (res.payload && email && pass) {
+          if (res.payload) {
             this.dataService.userId.set(res.payload._id);
             this.dataService.userEvents.set(res.payload.events);
+
+
+            let token = res.token;
+            console.log(token);
+
+            localStorage.setItem('token', token)
 
             // this.dataService.getEvents().subscribe({
             //   next:(res)=>{

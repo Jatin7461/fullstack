@@ -31,6 +31,8 @@ export class HeaderComponent {
     this.dataService.userEvents.set([])
     this.dataService.userEventsWithIdOnly.set([])
     this.dataService.OrgEvents.set([])
+
+    localStorage.removeItem('token')
   }
 
 

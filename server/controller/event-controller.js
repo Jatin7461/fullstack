@@ -1,8 +1,9 @@
 const { Event } = require('../db.js')
-
+const jwt = require('jsonwebtoken')
 
 //fetch all events
 const getEvents = async (req, res, next) => {
+    console.log("hihihihih")
     let events = await Event.find()
     res.send({ message: "got the events", payload: events });
 }
@@ -10,6 +11,7 @@ const getEvents = async (req, res, next) => {
 //add a new event
 const addEvent = async (req, res, next) => {
     let event = req.body;
+    console.log('yo')
     await Event.create(event);
     res.send({ message: "Event created" })
 }
@@ -39,4 +41,17 @@ const deleteEvent = async (req, res, next) => {
 }
 
 
-module.exports = { getEvents, addEvent, updateEvent, deleteEvent };
+
+const verify = async (req, res) => {
+
+    console.log(req.body);
+    let bearerToken = req.body.token
+    const token = bearerToken.split(' ')[1];
+
+    let decodedToken = jwt.verify(token, 'abcdefgh');
+    console.log('decoded token is', decodedToken)
+    res.send({ message: "token valid" })
+
+}
+
+module.exports = { getEvents, addEvent, updateEvent, deleteEvent, verify };
