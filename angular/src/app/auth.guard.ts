@@ -3,16 +3,28 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { map, Observable } from 'rxjs';
 
-export const authGu ard: CanActivateFn = (route, state) => {
+export const authGuard: CanActivateFn = (route, state) => {
   let httpClient = inject(HttpClient)
-  if (localStorage.getItem('token')) {
-    console.log("entering verification")
-    return httpClient.post('http://localhost:4000/event-api/verify',{token:localStorage.getItem('token')}).pipe(map((data)=>{
-
-    }))
-  }
   let router = inject(Router)
-  router.navigate(['/home'])
+  let token = localStorage.getItem('token')
+  if (token) {
+    console.log("entering verification")
 
+    return httpClient.post<any>("http://localhost:4000/event-api/verify", { token: token }).pipe(
+      map((res) => {
+        console.log('res is:', res)
+
+        if (res.message === "token valid") {
+          console.log("token valid")
+          return true;
+        }
+
+        router.navigate(['/home'])
+        return false;
+      })
+    )
+  }
+  router.navigate(['/home'])
+  return false;
   // return true;
 };
