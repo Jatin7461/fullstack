@@ -1,18 +1,21 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DataService } from '../data.service';
 import { NavigateService } from '../navigate.service';
 import { EditEventService } from '../edit-event.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-create-event',
   templateUrl: './create-event.component.html',
   styleUrl: './create-event.component.css'
 })
-export class CreateEventComponent implements OnInit {
+export class CreateEventComponent implements OnInit, OnDestroy {
 
 
+  addEventObs$: Subscription;
+  updateEventObs$: Subscription
 
   editEvent = signal(false)
   eventName = signal('');
@@ -27,6 +30,7 @@ export class CreateEventComponent implements OnInit {
 
   constructor(private dataService: DataService,
     private router: Router, private navigateService: NavigateService, private editEventService: EditEventService) { }
+
 
 
   ngOnInit(): void {
@@ -63,7 +67,7 @@ export class CreateEventComponent implements OnInit {
   updateEvent() {
     let { eventName, eventDate, location, startTime, endTime } = this.eventDetails.value
     console.log('event id in create event component', this.editEventService.eventId())
-    this.dataService.updateEvent(this.editEventService.eventId(), { "company": this.navigateService.companyName(), eventName, eventDate, location, startTime, endTime }).subscribe({
+    this.updateEventObs$ = this.dataService.updateEvent(this.editEventService.eventId(), { "company": this.navigateService.companyName(), eventName, eventDate, location, startTime, endTime }).subscribe({
       next: (res) => {
         this.router.navigate(['company']);
       },
@@ -95,7 +99,7 @@ export class CreateEventComponent implements OnInit {
       return;
     }
 
-    this.dataService.addEvent({ "company": this.navigateService.companyName(), eventName, eventDate, location, startTime, endTime }).subscribe({
+    this.addEventObs$ = this.dataService.addEvent({ "company": this.navigateService.companyName(), eventName, eventDate, location, startTime, endTime }).subscribe({
       next: (res) => {
         console.log(res)
         this.router.navigate(['company'])
@@ -106,5 +110,15 @@ export class CreateEventComponent implements OnInit {
     });
 
 
+  }
+
+
+
+  ngOnDestroy(): void {
+    console.log("create event ondestroy", this.addEventObs$, this.updateEventObs$)
+    if (this.addEventObs$)
+      this.addEventObs$.unsubscribe();
+    if (this.updateEventObs$)
+      this.updateEventObs$.unsubscribe();
   }
 }

@@ -1,17 +1,18 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
 // import { error, log } from 'node:console';
 
 import { NavigateService } from '../navigate.service';
 import { Router } from '@angular/router';
 import { EditEventService } from '../edit-event.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-event',
   templateUrl: './event.component.html',
   styleUrl: './event.component.css'
 })
-export class EventComponent implements OnInit {
+export class EventComponent implements OnInit, OnDestroy {
 
   @Input() eventName: any = '';
   @Input() location: any = '';
@@ -26,7 +27,17 @@ export class EventComponent implements OnInit {
   @Input() showEditButton: boolean = false;
 
 
+  //observable variables
+  removeEventFromOrgObs$: Subscription;
+  getEventsObs$: Subscription;
+  removeEventFromUserObs$: Subscription
+  updateUserAfterRemove$: Subscription
+  joinEventObs$: Subscription;
+  updateUserAfterJoinObs$: Subscription
+
+
   constructor(private dataService: DataService, private navigateService: NavigateService, private router: Router, private editEventService: EditEventService) { }
+
   ngOnInit(): void {
 
     console.log('eventId', this.eventId)
@@ -54,11 +65,11 @@ export class EventComponent implements OnInit {
   removeEventFromOrg(id: any) {
 
     //delete the event from events array
-    this.dataService.deleteEventWithId(id).subscribe({
+    this.removeEventFromOrgObs$ = this.dataService.deleteEventWithId(id).subscribe({
       next: (res) => {
 
         //after deleting update the UI Arrays
-        this.dataService.getEvents().subscribe({
+        this.getEventsObs$ = this.dataService.getEvents().subscribe({
           next: (res) => {
 
 
@@ -120,7 +131,7 @@ export class EventComponent implements OnInit {
   //remove event from user 
   removeEventFromUser(id: any) {
     //get the user object from users database
-    this.dataService.getUserWithId(this.dataService.userId()).subscribe({
+    this.removeEventFromUserObs$ = this.dataService.getUserWithId(this.dataService.userId()).subscribe({
       next: (res) => {
 
         console.log("yo sup")
@@ -137,7 +148,7 @@ export class EventComponent implements OnInit {
         res.payload.events = eventIdList;
 
         //update the user with new information
-        this.dataService.updateUserWithId(this.dataService.userId(), res.payload).subscribe({
+        this.updateUserAfterRemove$ = this.dataService.updateUserWithId(this.dataService.userId(), res.payload).subscribe({
           next: (res) => {
 
             //after updating, remove the event from the UI Array
@@ -181,7 +192,7 @@ export class EventComponent implements OnInit {
     console.log('join clicked')
 
     //get the user object from users database and update the users event array
-    this.dataService.getUserWithId(userId).subscribe({
+    this.joinEventObs$ = this.dataService.getUserWithId(userId).subscribe({
       next: (res) => {
 
         //store events array in a temp variable
@@ -204,7 +215,7 @@ export class EventComponent implements OnInit {
         arrWithEventIds.push(id);
 
         //update the user with updated information
-        this.dataService.updateUserWithId(userId, res.payload).subscribe({
+        this.updateUserAfterJoinObs$ = this.dataService.updateUserWithId(userId, res.payload).subscribe({
           next: (res) => {
             console.log('res', res);
           },
@@ -237,6 +248,21 @@ export class EventComponent implements OnInit {
 
   }
 
+  ngOnDestroy(): void {
 
+  //   console.log("event ondestroy")
+
+  //   console.log(this.getEventsObs$, this.joinEventObs$,
+  //     this.removeEventFromOrgObs$, this.updateUserAfterJoinObs$,
+  //     this.removeEventFromUserObs$, this.updateUserAfterRemove$
+  //   )
+  
+  //   this.getEventsObs$.unsubscribe();
+  //   this.joinEventObs$.unsubscribe();
+  //   this.removeEventFromOrgObs$.unsubscribe();
+  //   this.updateUserAfterRemove$.unsubscribe();
+  //   this.removeEventFromUserObs$.unsubscribe();
+  //   this.updateUserAfterJoinObs$.unsubscribe();
+  }
 
 }

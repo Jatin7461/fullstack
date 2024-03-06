@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { DataService } from '../data.service';
 import { NavigateService } from '../navigate.service';
 
@@ -25,14 +26,11 @@ export class EventsComponent implements OnInit, OnDestroy {
   upcomingEventsList: any = signal([])
   ongoingEventsList: any = signal([])
 
+
+  // getEventsObs$:Subscription
+
   constructor(public navigateService: NavigateService, private dataService: DataService) { }
-  ngOnDestroy(): void {
-    // throw new Error('Method not implemented.');
-    // this.navigateService.pastEventsList.set([]);
-    // this.navigateService.ongoingEventsList.set([]);
-    // this.navigateService.upcomingEventsList.set([]);
-    console.log('on destroy called')
-  }
+
 
   ngOnInit(): void {
     // throw new Error('Method not implemented.');
@@ -166,5 +164,8 @@ export class EventsComponent implements OnInit, OnDestroy {
 
   }
 
+  ngOnDestroy(): void {
+    // this.getEventsObs$.unsubscribe();
+  }
 
 }

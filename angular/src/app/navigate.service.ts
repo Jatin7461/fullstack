@@ -1,16 +1,24 @@
-import { Injectable, Signal, signal } from '@angular/core';
+import { Injectable, OnDestroy, OnInit, Signal, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { DataService } from './data.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class NavigateService {
+export class NavigateService implements OnInit,OnDestroy {
 
   constructor(private router: Router, private dataService: DataService) { }
+  ngOnInit(): void {
+    // throw new Error('Method not implemented.');
+    console.log("hi im working")
+  }
 
 
-
+  
+  userLoginObs$: Subscription;
+  OrgLoginObs$: Subscription;
+  getEventsObs$: Subscription;
 
   showSignUp = true
   showSignIn = true
@@ -35,7 +43,7 @@ export class NavigateService {
 
   companyName = signal('');
   signInError = signal(false);
-
+  
   signUpAs = signal("Organization")
   placeholder = signal('')
 
@@ -53,7 +61,7 @@ export class NavigateService {
       this.signUpAs.set("Organization")
     }
     console.log('second called')
-
+    
     this.signUpFlag.set(!this.signUpFlag());
     console.log('third called', this.signUpFlag())
   }
@@ -62,36 +70,37 @@ export class NavigateService {
   onSignIn(email: any, pass: any) {
     if (this.signUpAs() === "Organization") {
 
-
-      this.dataService.loginOrg({ email, pass }).subscribe({
+      
+      this.OrgLoginObs$ = this.dataService.loginOrg({ email, pass }).subscribe({
         next: (res) => {
-          console.log('res is : ', res)
+          console.log('login res is : ', res)
           console.log(email, pass)
           if (!res.payload) {
             this.signInError.set(true);
           }
           else {
-            localStorage.setItem('token',res.token)
+            localStorage.setItem('token', res.token)
             this.companyName.set(res.payload.name);
             this.signInError.set(false);
             this.showLogout = true;
             this.showSignIn = false;
             this.showSignUp = false;
+            localStorage.setItem('companyName', res.payload.name)
             this.router.navigate(['company']);
           }
         },
         error: (err) => {
           console.log(err)
         }
-
-
+        
+        
       })
     }
     else {
 
-      this.dataService.userLogin({ email, password: pass }).subscribe({
+      this.userLoginObs$ = this.dataService.userLogin({ email, password: pass }).subscribe({
         next: (res) => {
-
+          
           console.log('res is', res)
           if (res.payload) {
             this.dataService.userId.set(res.payload._id);
@@ -102,7 +111,7 @@ export class NavigateService {
             console.log(token);
 
             localStorage.setItem('token', token)
-
+            localStorage.setItem('userId', res.payload._id)
             // this.dataService.getEvents().subscribe({
             //   next:(res)=>{
 
@@ -112,14 +121,14 @@ export class NavigateService {
             //   }
             // })
 
-            this.dataService.getEvents().subscribe({
+            this.getEventsObs$ = this.dataService.getEvents().subscribe({
               next: (res) => {
                 console.log('get events', res)
                 let arr: any = []
                 for (let event of res.payload) {
                   for (let userEvent of this.dataService.userEventsWithIdOnly()) {
                     if (userEvent === event['id'])
-                      arr.push(event);
+                    arr.push(event);
                   }
                 }
                 console.log('res is ', res);
@@ -128,6 +137,7 @@ export class NavigateService {
 
 
                 this.dataService.userEvents.set(arr);
+                localStorage.setItem('orgEvents', JSON.stringify(res.payload))
                 this.showLogout = true;
                 this.showSignIn = false;
                 this.showSignUp = false;
@@ -153,9 +163,9 @@ export class NavigateService {
     }
   }
 
-
+  
   validateCredentials() {
-
+    
   }
 
 
@@ -172,7 +182,7 @@ export class NavigateService {
   }
 
   onUpcomingEvents() {
-
+    
     this.showUpcomingEvents.set(true)
     this.showPastEvents.set(false)
     this.showOngoingEvents.set(false)
@@ -192,12 +202,12 @@ export class NavigateService {
   }
 
 
-
+  
 
   organizeEvents() {
 
   }
-
+  
   calculateTime(event: any): string {
 
 
@@ -213,7 +223,7 @@ export class NavigateService {
       currTime = "0" + currTime
     }
     else if (currTime.length == 2)
-      currTime = "00" + currTime
+    currTime = "00" + currTime
     else if (currTime.length == 1)
       currTime = "000" + currTime
     else if (currTime.length == 0)
@@ -227,12 +237,17 @@ export class NavigateService {
       return 'past';
     }
     else return 'upcoming'
-
+    
 
 
 
 
   }
 
+  ngOnDestroy(): void {
+    this.OrgLoginObs$.unsubscribe();
+    this.userLoginObs$.unsubscribe()
+    this.getEventsObs$.unsubscribe()
+  }
 
 }

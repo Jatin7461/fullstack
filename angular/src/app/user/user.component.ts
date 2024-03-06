@@ -1,5 +1,6 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { DataService } from '../data.service';
 
 @Component({
@@ -7,9 +8,10 @@ import { DataService } from '../data.service';
   templateUrl: './user.component.html',
   styleUrl: './user.component.css'
 })
-export class UserComponent implements OnInit {
+export class UserComponent implements OnInit, OnDestroy {
 
 
+  getUserWithIdObs$: Subscription
 
   userEvents: any = signal([])
   OrgEvents = signal([])
@@ -24,7 +26,11 @@ export class UserComponent implements OnInit {
     this.userEvents = this.dataService.userEvents
     this.OrgEvents = this.dataService.OrgEvents;
 
-    this.dataService.getUserWithId(this.dataService.userId()).subscribe({
+    if (this.dataService.userId() === '') {
+      this.dataService.userId.set(localStorage.getItem('userId'));
+    }
+    console.log('user id is', this.dataService.userId())
+    this.getUserWithIdObs$ = this.dataService.getUserWithId(this.dataService.userId()).subscribe({
       next: (res) => {
 
         if (res.message === "Unauthorised access") {
@@ -39,7 +45,8 @@ export class UserComponent implements OnInit {
         console.log(res);
         console.log(eventIdList);
         let eventsArr: any = [];
-        console.log('orgevents are:', typeof (this.dataService.OrgEvents()))
+        this.dataService.OrgEvents.set(JSON.parse(localStorage.getItem('orgEvents')))
+        console.log('orgevents are:', typeof (this.dataService.OrgEvents()), this.dataService.OrgEvents())
         for (let event of this.dataService.OrgEvents()) {
           for (let eve of eventIdList) {
             if (eve == event['_id']) {
@@ -67,6 +74,16 @@ export class UserComponent implements OnInit {
   onUpcomingEvents() {
     this.yourEvents = false;
     this.upcomingEvents = true
+  }
+
+  ngOnDestroy(): void {
+    // throw new Error('Method not implemented.');
+    console.log('user component destroyed')
+    localStorage.removeItem('orgEvents')
+    localStorage.removeItem('userId')
+    localStorage.removeItem('companyName')
+    localStorage.removeItem('token')
+    this.getUserWithIdObs$.unsubscribe();
   }
 
 }

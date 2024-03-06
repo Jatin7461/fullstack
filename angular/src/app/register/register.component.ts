@@ -1,6 +1,7 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Subscribable, Subscription } from 'rxjs';
 import { DataService } from '../data.service';
 import { NavigateService } from '../navigate.service';
 
@@ -9,7 +10,7 @@ import { NavigateService } from '../navigate.service';
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, OnDestroy {
 
 
   orgNameRequired: boolean = false;
@@ -26,13 +27,25 @@ export class RegisterComponent implements OnInit {
   userPassConfirmRequired: boolean = false;
 
 
-  file:File;
-  fileName:String='';
+  getOrgs$: Subscription;
+  addOrganization$: Subscription
+  getUsers$: Subscription
+  addUser$: Subscription
+
+
+  file: File;
+  fileName: String = '';
 
   constructor(private navigateService: NavigateService, private dataService: DataService, private router: Router) { }
+
   ngOnInit(): void {
     this.signUpAs = this.navigateService.signUpAs
     this.signUpFlag = this.navigateService.signUpFlag
+
+
+    this.navigateService.showLogout = false;
+    this.navigateService.showSignIn = true;
+    this.navigateService.showSignUp = true;
 
   }
 
@@ -58,7 +71,7 @@ export class RegisterComponent implements OnInit {
 
   changeSignUpAs() {
     this.navigateService.changeSignUpAs();
-    console.log(this.signUpFlag());    
+    console.log(this.signUpFlag());
   }
 
   onSignUp() {
@@ -66,7 +79,7 @@ export class RegisterComponent implements OnInit {
     let userEvents: any = []
 
     let formData = new FormData();
-    
+
 
 
 
@@ -119,13 +132,13 @@ export class RegisterComponent implements OnInit {
     }
 
 
-    this.dataService.getOrgs(email).subscribe({
+    this.getOrgs$ = this.dataService.getOrgs(email).subscribe({
       next: (res) => {
 
         console.log('res is :', res)
         if (res.payload === null) {
           console.log('email does not exists, signing up')
-          this.dataService.addOrganization({ name, email, pass }).subscribe({
+          this.addOrganization$ = this.dataService.addOrganization({ name, email, pass }).subscribe({
             next: (res) => {
               console.log(res);
               this.router.navigate(['login']);
@@ -178,7 +191,7 @@ export class RegisterComponent implements OnInit {
     }
 
 
-    this.dataService.getUsers(email).subscribe({
+    this.getUsers$ = this.dataService.getUsers(email).subscribe({
       next: (res) => {
 
         console.log('payload', res.payload);
@@ -186,7 +199,7 @@ export class RegisterComponent implements OnInit {
         if (res.payload === null) {
 
           console.log('no email found, registering user')
-          this.dataService.addUser({ name: firstName + ' ' + lastName, email, pass, events: [] }).subscribe({
+          this.addUser$ = this.dataService.addUser({ name: firstName + ' ' + lastName, email, pass, events: [] }).subscribe({
             next: (res) => {
               this.router.navigate(['login']);
             }
@@ -208,13 +221,26 @@ export class RegisterComponent implements OnInit {
   }
 
   //this method receives file content, read and make it ready for preview
-  onChange(file: File){
+  onChange(file: File) {
 
-    if(file){
+    if (file) {
       this.fileName = file.name;
       this.file = file;
     }
 
+  }
+
+  ngOnDestroy(): void {
+    console.log("register ondestroy")
+
+    if (this.getOrgs$)
+      this.getOrgs$.unsubscribe();
+    if (this.addOrganization$)
+      this.addOrganization$.unsubscribe();
+    if (this.getUsers$)
+      this.getUsers$.unsubscribe();
+    if (this.addUser$)
+      this.addUser$.unsubscribe();
   }
 
 

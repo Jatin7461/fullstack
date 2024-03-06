@@ -49,8 +49,9 @@ export class DataService {
 
   getUsers(email: any) {
     console.log("this called")
+
     let url = `http://localhost:4000/user-api/users?email=${email}`
-    return this.httpClient.get<any>(url, { headers: { authorization: localStorage.getItem('token') } });
+    return this.httpClient.get<any>(url);
   }
 
 

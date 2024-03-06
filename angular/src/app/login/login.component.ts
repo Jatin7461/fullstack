@@ -11,22 +11,6 @@ import { Router } from '@angular/router';
 export class LoginComponent {
 
 
-  // signUpAs: string = "Organization";
-  // signUpFlag: boolean = true;
-  // changeSignUpAs() {
-  //   if (this.signUpFlag) {
-
-  //     this.signUpAs = "User"
-  //   }
-  //   else {
-
-  //     this.signUpAs = "Organization"
-
-  //   }
-
-  //   this.signUpFlag = !this.signUpFlag;
-  // }
-
   showError = signal(false);
 
   loginDetails = new FormGroup({
@@ -39,6 +23,10 @@ export class LoginComponent {
     this.signUpAs = this.navigateService.signUpAs
     this.signUpFlag = this.navigateService.signUpFlag
     this.showError = this.navigateService.signInError;
+
+    this.navigateService.showLogout = false;
+    this.navigateService.showSignIn = true;
+    this.navigateService.showSignUp = true;
   }
 
 

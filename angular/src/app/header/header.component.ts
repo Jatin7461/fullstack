@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DataService } from '../data.service';
 import { NavigateService } from '../navigate.service';
@@ -8,11 +8,23 @@ import { NavigateService } from '../navigate.service';
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
 
 
 
   constructor(public navigateService: NavigateService, private dataService: DataService, private router: Router) { }
+  ngOnInit(): void {
+
+    if (localStorage.getItem('token')) {
+      this.navigateService.showLogout = true;
+      this.navigateService.showSignIn = false;
+      this.navigateService.showSignUp = false;
+      this.navigateService.companyName.set(localStorage.getItem('companyName'))
+    }
+
+    console.log('company name is ', this.navigateService.companyName())
+
+  }
 
   onLogout() {
     this.navigateService.pastEventsList = ([])
