@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subscribable, Subscription } from 'rxjs';
+import { Subscribable, Subscription, find } from 'rxjs';
 import { DataService } from '../data.service';
 import { NavigateService } from '../navigate.service';
 
@@ -20,6 +20,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   emailExists = false;
   userEmailExists = false;
+  invalidEmail = false;
 
   userNameRequired: boolean = false;
   userEmailRequired: boolean = false;
@@ -50,7 +51,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   SignUpDetails = new FormGroup({
-    "name": new FormControl('', Validators.required),
+    "name": new FormControl('', [Validators.required]),
     "email": new FormControl(''),
     "pass": new FormControl(''),
     "confirmPass": new FormControl(''),
@@ -109,15 +110,34 @@ export class RegisterComponent implements OnInit, OnDestroy {
   signUpAsOrg(org: any) {
 
     let { name, email, pass, confirmPass } = org;
-    if (!name || !email || !pass || pass !== confirmPass) {
+
+    let validateEmail = this.validateEmail(email);
+    console.log('validateEmail', validateEmail)
+
+    if (name) {
+      this.orgNameRequired = false;
+    }
+
+    if (email) {
+      this.emailRequired = false;
+    }
+
+    if (validateEmail) {
+      this.invalidEmail = false;
+    }
+
+
+    if (pass && pass === confirmPass) {
+      this.passwordRequired = false;
+    }
+
+    if (!name || !email || !pass || pass !== confirmPass || !validateEmail) {
 
       if (!name) {
         this.orgNameRequired = true;
       }
 
-      if (!email) {
-        this.emailRequired = true;
-      }
+
 
       if (!pass) {
         this.passwordRequired = true;
@@ -128,6 +148,15 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
       }
 
+      if (!validateEmail) {
+        this.invalidEmail = true;
+        console.log('returning invalid email')
+      }
+
+      if (!email) {
+        this.emailRequired = true;
+        this.invalidEmail = false;
+      }
       return;
     }
 
@@ -230,6 +259,52 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   }
 
+  //validates the email
+  validateEmail(email: String) {
+
+    if (!email) return false;
+
+    //return false if email starts with a number
+    if (email[0] >= '0' && email[0] <= '9') return false;
+    
+    let str = 0, atIndex = 0, len = email.length;
+    let findAt = email.indexOf('@')
+    let findDot = email.indexOf('.')
+    //return false if there is no @ or .
+    if (findAt === -1 || findDot === -1 || findDot - findAt === 1 || findAt === 0 || findDot === len - 1) return false;
+
+
+    //return false if there is no name before @
+    for (let char of email) {
+      if (char === '@') {
+        if (str === 0) {
+          return false;
+        }
+        break;
+      }
+      str++;
+      atIndex++;
+    }
+
+
+    //return false if there is no mail name between @ and .
+    for (let i = atIndex; i < len; i++) {
+      if (email[i] === '.') {
+        if (len - i === 0) return false;
+        atIndex = i + 1;
+      }
+    }
+
+    if (len - atIndex === 0) return false;
+
+
+
+
+
+    return true;
+
+  }
+
   ngOnDestroy(): void {
     console.log("register ondestroy")
 
@@ -242,6 +317,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
     if (this.addUser$)
       this.addUser$.unsubscribe();
   }
+
+
 
 
 
