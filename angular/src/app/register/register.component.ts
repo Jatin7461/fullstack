@@ -13,21 +13,25 @@ import { NavigateService } from '../navigate.service';
 export class RegisterComponent implements OnInit, OnDestroy {
 
 
+  //org register form validation variables for ngIf
   orgNameRequired: boolean = false;
   emailRequired: boolean = false;
   passwordRequired: boolean = false;
   passMatch: boolean = false;
 
+  // org and user email validation variables for ngIf
   emailExists = false;
   userEmailExists = false;
   invalidEmail = false;
+  userEmailInvalid = false;
 
+  //user register form variables for ngIF
   userNameRequired: boolean = false;
   userEmailRequired: boolean = false;
   userPassRequired: boolean = false;
   userPassConfirmRequired: boolean = false;
 
-
+  //subscription variables
   getOrgs$: Subscription;
   addOrganization$: Subscription
   getUsers$: Subscription
@@ -40,24 +44,28 @@ export class RegisterComponent implements OnInit, OnDestroy {
   constructor(private navigateService: NavigateService, private dataService: DataService, private router: Router) { }
 
   ngOnInit(): void {
+
+    //know whether user is registering or organization
     this.signUpAs = this.navigateService.signUpAs
     this.signUpFlag = this.navigateService.signUpFlag
 
 
+    //set the login, logout
     this.navigateService.showLogout = false;
     this.navigateService.showSignIn = true;
     this.navigateService.showSignUp = true;
 
   }
 
-  SignUpDetails = new FormGroup({
+  //form group for organization registeration
+  orgSignUpDetails = new FormGroup({
     "name": new FormControl('', [Validators.required]),
-    "email": new FormControl(''),
+    "email": new FormControl('', [Validators.required, Validators.email]),
     "pass": new FormControl(''),
     "confirmPass": new FormControl(''),
   })
 
-
+  //form group for user registeration
   userSignUpDetails = new FormGroup({
     firstName: new FormControl(''),
     lastName: new FormControl(''),
@@ -66,34 +74,27 @@ export class RegisterComponent implements OnInit, OnDestroy {
     confirmPass: new FormControl('')
   })
 
+  
   signUpAs = signal('')
   signUpFlag = signal(true);
   placeholder = signal('')
 
+  //change sign up as user or organization
   changeSignUpAs() {
     this.navigateService.changeSignUpAs();
     console.log(this.signUpFlag());
   }
 
+  //executes when sign up button is clicked
   onSignUp() {
     this.emailExists = false;
-    let userEvents: any = []
 
-    let formData = new FormData();
-
-
-
-
-
-
-
-    let { name, email, pass, confirmPass } = this.SignUpDetails.value;
-    console.log(this.SignUpDetails.value);
+    //when signing up as an organizatoin
     if (this.signUpAs() === 'Organization') {
-
-
+      let { name, email, pass, confirmPass } = this.orgSignUpDetails.value;
       this.signUpAsOrg({ name, email, pass, confirmPass });
     }
+    //when signing up as a user/employee
     else {
       let { firstName, lastName, email, pass, confirmPass } = this.userSignUpDetails.value;
       this.signUpAsUser({ firstName, lastName, email, pass, confirmPass })
@@ -101,133 +102,64 @@ export class RegisterComponent implements OnInit, OnDestroy {
     }
   }
 
-
+  //when user/organization registeration is a success -> navigate to login
   goToSignIn() {
     this.router.navigate(['login']);
   }
 
-
+  //sign up as an organization
   signUpAsOrg(org: any) {
-
+    
+    //fetch all the inputs and validate the form
     let { name, email, pass, confirmPass } = org;
+    let validateForm = this.validateOrgForm({ name, email, pass, confirmPass });
 
-    let validateEmail = this.validateEmail(email);
-    console.log('validateEmail', validateEmail)
+    //return if inputs are invalid
+    if (!validateForm) return
 
-    if (name) {
-      this.orgNameRequired = false;
-    }
-
-    if (email) {
-      this.emailRequired = false;
-    }
-
-    if (validateEmail) {
-      this.invalidEmail = false;
-    }
-
-
-    if (pass && pass === confirmPass) {
-      this.passwordRequired = false;
-    }
-
-    if (!name || !email || !pass || pass !== confirmPass || !validateEmail) {
-
-      if (!name) {
-        this.orgNameRequired = true;
-      }
-
-
-
-      if (!pass) {
-        this.passwordRequired = true;
-      }
-
-      if (pass !== confirmPass) {
-        this.passMatch = true;
-
-      }
-
-      if (!validateEmail) {
-        this.invalidEmail = true;
-        console.log('returning invalid email')
-      }
-
-      if (!email) {
-        this.emailRequired = true;
-        this.invalidEmail = false;
-      }
-      return;
-    }
-
-
+    //fetch all the orgs and check if organization with email already exists
     this.getOrgs$ = this.dataService.getOrgs(email).subscribe({
       next: (res) => {
 
-        console.log('res is :', res)
         if (res.payload === null) {
-          console.log('email does not exists, signing up')
+          //no organization with same email exists -> add the organization
           this.addOrganization$ = this.dataService.addOrganization({ name, email, pass }).subscribe({
             next: (res) => {
-              console.log(res);
               this.router.navigate(['login']);
             }
           });
 
         }
         else {
+          //organization with the given email already exists
           this.emailExists = true;
-          console.log('org with this email already exists')
         }
       },
       error: (err) => {
         console.log(err);
       }
     })
-
-
-
   }
 
-
+  //sign up as a user/employee
   signUpAsUser(user: any) {
+
+    //fetch the user register form inputs and validate them
     this.userEmailExists = false;
     let { firstName, lastName, email, pass, confirmPass } = user;
+    let validateForm = this.validateUserForm(user)
 
-    console.log(firstName, lastName, email, pass, confirmPass)
-    console.log('verifying credentials')
-    if (!firstName || !email || !pass || !confirmPass) {
-
-      if (!firstName) {
-        this.userNameRequired = true;
-      }
-
-      if (!email) {
-        this.userEmailRequired = true;
-      }
-
-      if (!pass) {
-        this.userPassRequired = true;
-      }
-
-      if (pass !== confirmPass) {
-        this.userPassConfirmRequired = true;
-      }
-
-      console.log('nope');
-      return;
-
-    }
+    //return if inputs are invalid
+    if (!validateForm) return;
 
 
+    //check if user already exists
     this.getUsers$ = this.dataService.getUsers(email).subscribe({
       next: (res) => {
 
-        console.log('payload', res.payload);
 
         if (res.payload === null) {
-
-          console.log('no email found, registering user')
+          //user does not exists -> add user
           this.addUser$ = this.dataService.addUser({ name: firstName + ' ' + lastName, email, pass, events: [] }).subscribe({
             next: (res) => {
               this.router.navigate(['login']);
@@ -235,8 +167,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
           });
         }
         else {
+          //user exists -> don't add the user
           this.userEmailExists = true;
-          console.log('email already exists')
         }
 
       },
@@ -249,16 +181,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   }
 
-  //this method receives file content, read and make it ready for preview
-  onChange(file: File) {
-
-    if (file) {
-      this.fileName = file.name;
-      this.file = file;
-    }
-
-  }
-
   //validates the email
   validateEmail(email: String) {
 
@@ -266,48 +188,126 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
     //return false if email starts with a number
     if (email[0] >= '0' && email[0] <= '9') return false;
-    
+
     let str = 0, atIndex = 0, len = email.length;
     let findAt = email.indexOf('@')
-    let findDot = email.indexOf('.')
+    let findDot = email.lastIndexOf('.')
     //return false if there is no @ or .
-    if (findAt === -1 || findDot === -1 || findDot - findAt === 1 || findAt === 0 || findDot === len - 1) return false;
+    if (findAt === -1 || findDot === -1 || findDot - findAt === 1 || findAt === 0 || findDot === len - 1 || findDot < findAt) return false;
+    return true;
+
+  }
 
 
-    //return false if there is no name before @
-    for (let char of email) {
-      if (char === '@') {
-        if (str === 0) {
-          return false;
-        }
-        break;
+  //validate organization register inputs
+  validateOrgForm(org) {
+    
+    //fetch all inputs and validate them
+    let { name, email, pass, confirmPass } = org;
+    let validateEmail = this.validateEmail(email);
+
+    if (name) {
+      this.orgNameRequired = false;
+    }
+    if (email) {
+      this.emailRequired = false;
+    }
+    if (validateEmail) {
+      this.invalidEmail = false;
+    }
+    if (pass && pass === confirmPass) {
+      this.passwordRequired = false;
+    }
+
+    if (!name || !email || !pass || pass !== confirmPass || !validateEmail) {
+      if (!name) {
+        this.orgNameRequired = true;
       }
-      str++;
-      atIndex++;
+      if (!pass) {
+        this.passwordRequired = true;
+      }
+
+      if (pass !== confirmPass) {
+        this.passMatch = true;
+      }
+      if (!validateEmail) {
+        this.invalidEmail = true;
+        console.log('returning invalid email')
+      }
+      if (!email) {
+        this.emailRequired = true;
+        this.invalidEmail = false;
+      }
+      return false;
+    }
+
+    return true;
+  }
+
+  //validate user register inputs
+  validateUserForm(user) {
+    let { firstName, lastName, email, pass, confirmPass } = user;
+
+
+    console.log(firstName, lastName, email, pass, confirmPass)
+    console.log('verifying credentials')
+
+    let validateEmail = this.validateEmail(email);
+
+    if (firstName) {
+      this.userNameRequired = false;
+    }
+
+    if (email) {
+      this.userEmailRequired = false;
+    }
+
+    if (validateEmail) {
+      this.userEmailInvalid = false;
     }
 
 
-    //return false if there is no mail name between @ and .
-    for (let i = atIndex; i < len; i++) {
-      if (email[i] === '.') {
-        if (len - i === 0) return false;
-        atIndex = i + 1;
-      }
+    if (pass && pass === confirmPass) {
+      this.userPassRequired = false;
     }
 
-    if (len - atIndex === 0) return false;
 
+    if (!firstName || !email || !pass || !confirmPass || !validateEmail) {
 
+      if (!firstName) {
+        this.userNameRequired = true;
+      }
 
+      if (!validateEmail) {
+        this.userEmailInvalid = true;
+      }
 
+      if (!email) {
+        this.userEmailRequired = true;
+        this.userEmailInvalid = false;
+      }
+
+      if (!pass) {
+        this.userPassRequired = true;
+      }
+
+      if (pass !== confirmPass) {
+        this.userPassConfirmRequired = true;
+      }
+
+      console.log('nope');
+      return false;
+
+    }
 
     return true;
 
   }
 
+  //on destroy
   ngOnDestroy(): void {
-    console.log("register ondestroy")
 
+    //unsubscribe all the subscriptions
     if (this.getOrgs$)
       this.getOrgs$.unsubscribe();
     if (this.addOrganization$)

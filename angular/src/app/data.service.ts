@@ -32,7 +32,7 @@ export class DataService {
 
 
   getOrgs(email: any) {
-    return this.httpClient.get<any>("http://localhost:4000/org-api/organizations/" + email, { headers: { authorization: localStorage.getItem('token') } });
+    return this.httpClient.get<any>("http://localhost:4000/org-api/organizations/" + email);
   }
 
 

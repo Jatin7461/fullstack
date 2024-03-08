@@ -186,7 +186,7 @@ export class EventComponent implements OnInit, OnDestroy {
 
   joinEvent(id: string) {
 
-
+    
     console.log('id', id)
     let userId = this.dataService.userId();
     console.log('join clicked')
