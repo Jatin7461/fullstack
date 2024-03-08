@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 
 //fetch all events
 const getEvents = async (req, res, next) => {
-    console.log("hihihihih")
+    
     let events = await Event.find()
     res.send({ message: "got the events", payload: events });
 }
