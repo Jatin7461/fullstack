@@ -1,3 +1,4 @@
+// import mongoose and connect to database
 const mongoose = require('mongoose');
 
 mongoose.connect("mongodb://127.0.0.1:27017").then(() => {
@@ -6,7 +7,7 @@ mongoose.connect("mongodb://127.0.0.1:27017").then(() => {
     console.log(err);
 })
 
-
+//user schema
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -30,7 +31,7 @@ const userSchema = new mongoose.Schema({
 
 })
 
-
+//organization schema
 const orgSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -46,7 +47,7 @@ const orgSchema = new mongoose.Schema({
     }
 })
 
-
+//event schema
 const eventSchema = new mongoose.Schema({
     company: {
         type: String,
@@ -76,7 +77,11 @@ const eventSchema = new mongoose.Schema({
 
 })
 
+
+//create model for the respective events
 const User = mongoose.model('user', userSchema)
 const Org = mongoose.model('org', orgSchema);
 const Event = mongoose.model('event', eventSchema)
+
+//export the models
 module.exports = { Org, User, Event };

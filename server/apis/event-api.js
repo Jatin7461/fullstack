@@ -1,10 +1,15 @@
+
+//import express and create event router
 const express = require('express')
 const eventApp = express.Router();
 
+//import express-async-handler to handle exceptions
 const expressAsyncHandler = require('express-async-handler')
 
-
+//import functions from event controller file
 const { getEvents, addEvent, updateEvent, deleteEvent, verify } = require('../controller/event-controller')
+
+//import verify token middleware
 const verifyToken = require('../middlewares/verifyToken')
 
 //fetch all events
@@ -22,9 +27,5 @@ eventApp.delete('/events/:id', verifyToken, expressAsyncHandler(deleteEvent))
 
 eventApp.post('/verify', expressAsyncHandler(verify))
 
-
-
-
-
-
+//export event router
 module.exports = eventApp;

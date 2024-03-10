@@ -33,7 +33,6 @@ export class EventsComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    // throw new Error('Method not implemented.');
 
     this.pastEventsList.set([])
     this.upcomingEventsList.set([])
@@ -44,10 +43,8 @@ export class EventsComponent implements OnInit, OnDestroy {
     this.showOngoingEvents = this.navigateService.showOngoingEvents
 
     //arrange all events in their respective lists
-    console.log('checking token before getting events', localStorage.getItem('token'))
     this.dataService.getEvents().subscribe({
       next: (res) => {
-        console.log('get Events', res);
 
         let pastList = []
         let upcomingList = []
@@ -55,11 +52,9 @@ export class EventsComponent implements OnInit, OnDestroy {
         let currDate = new Date().toISOString().slice(0, 10);
         for (let event of res.payload) {
           // console.log(event);
-          console.log('company name in event: ', event.company, this.navigateService.companyName())
           if (event.eventDate === currDate) {
 
             //get the status of the event 
-            console.log('calling calculate time')
             let status: string = this.calculateTime(event);
             console.log(event.eventName, status)
             if (status === 'ongoing') {
@@ -114,7 +109,6 @@ export class EventsComponent implements OnInit, OnDestroy {
         this.navigateService.pel = this.pel
         this.navigateService.oel = this.oel
 
-        console.log('uel are:', this.navigateService.uel);
       },
       error: (err) => {
         console.log('the error iss', err);
@@ -129,7 +123,6 @@ export class EventsComponent implements OnInit, OnDestroy {
 
   calculateTime(event: any): string {
 
-    console.log('inside calculateTime')
     let currDate = new Date();
     let currHour = currDate.getHours();
     console.log('currMin is', currDate.getMinutes())

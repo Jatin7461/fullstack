@@ -12,6 +12,7 @@ export class HomeComponent implements OnInit {
 
   }
   ngOnInit(): void {
+    //update header buttons
     this.navigateService.showLogout = false;
     this.navigateService.showSignIn = true;
     this.navigateService.showSignUp = true;

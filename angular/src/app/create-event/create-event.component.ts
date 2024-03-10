@@ -13,19 +13,32 @@ import { Subscription } from 'rxjs';
 })
 export class CreateEventComponent implements OnInit, OnDestroy {
 
-
+  //Subscription variables
   addEventObs$: Subscription;
   updateEventObs$: Subscription
 
+  //boolean flag if event is getting edited or not
   editEvent = signal(false)
+
+  //name of event
   eventName = signal('');
 
 
+  //boolean flags used in template
   eventNameRequired: boolean = false
   eventLocationRequired: boolean = false
   eventDateRequired: boolean = false
   eventStartTimeRequired: boolean = false
   eventEndTimeRequired: boolean = false
+
+  //event form group
+  eventDetails = new FormGroup({
+    eventName: new FormControl(''),
+    eventDate: new FormControl(''),
+    location: new FormControl(''),
+    startTime: new FormControl(''),
+    endTime: new FormControl('')
+  })
 
 
   constructor(private dataService: DataService,
@@ -34,14 +47,14 @@ export class CreateEventComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    // throw new Error('Method not implemented.');
+
+    //initialize edit event to true/false
+    //initialize event name
     this.editEvent = this.navigateService.editEvent
     this.eventName = this.editEventService.eventName
-    // console.log('yooooo', this.eventName())
-    console.log('edit event', this.editEvent())
 
+    //if editing event then initialize form values
     if (this.editEvent()) {
-      console.log('event location', this.editEventService.eventLocation())
       this.eventDetails.setValue({
         eventName: this.eventName(),
         eventDate: this.editEventService.eventDate(),
@@ -53,22 +66,15 @@ export class CreateEventComponent implements OnInit, OnDestroy {
     this.editEvent = this.navigateService.editEvent;
   }
 
-
-  eventDetails = new FormGroup({
-    eventName: new FormControl(''),
-    eventDate: new FormControl(''),
-    location: new FormControl(''),
-    startTime: new FormControl(''),
-    endTime: new FormControl('')
-  })
-
-
-
+  //update event function
   updateEvent() {
+    //fetch event form inputs
     let { eventName, eventDate, location, startTime, endTime } = this.eventDetails.value
-    console.log('event id in create event component', this.editEventService.eventId())
+
+    //update the event
     this.updateEventObs$ = this.dataService.updateEvent(this.editEventService.eventId(), { "company": this.navigateService.companyName(), eventName, eventDate, location, startTime, endTime }).subscribe({
       next: (res) => {
+        //navigate back to company component
         this.router.navigate(['company']);
       },
       error: (err) => {
@@ -78,11 +84,13 @@ export class CreateEventComponent implements OnInit, OnDestroy {
   }
 
 
-
+  //create new event
   onCreateEvent() {
+
+    //fetch event form inputs
     let { eventName, eventDate, location, startTime, endTime } = this.eventDetails.value
 
-
+    //validate inputs
     if (!eventName || !eventDate || !location || !startTime || !endTime) {
       if (!eventName) this.eventNameRequired = true;
 
@@ -99,9 +107,10 @@ export class CreateEventComponent implements OnInit, OnDestroy {
       return;
     }
 
+    //add a new event and subscribe
     this.addEventObs$ = this.dataService.addEvent({ "company": this.navigateService.companyName(), eventName, eventDate, location, startTime, endTime }).subscribe({
       next: (res) => {
-        console.log(res)
+        //navigate back to company component
         this.router.navigate(['company'])
       },
       error: (err) => {
@@ -113,9 +122,10 @@ export class CreateEventComponent implements OnInit, OnDestroy {
   }
 
 
-
+  //on destroy
   ngOnDestroy(): void {
-    console.log("create event ondestroy", this.addEventObs$, this.updateEventObs$)
+
+    //unsubscribe all the subscriptions
     if (this.addEventObs$)
       this.addEventObs$.unsubscribe();
     if (this.updateEventObs$)

@@ -14,6 +14,8 @@ import { Subscription } from 'rxjs';
 })
 export class EventComponent implements OnInit, OnDestroy {
 
+
+  //event information
   @Input() eventName: any = '';
   @Input() location: any = '';
   @Input() date: any = '';
@@ -21,13 +23,15 @@ export class EventComponent implements OnInit, OnDestroy {
   @Input() endTime: any = '';
   @Input() seats: any = '';
   @Input() eventId: any = '';
+
+  //boolean flags used in template
   @Input() showJoinButton: boolean = false;
   @Input() eventJoined: boolean = false;
   @Input() showRemoveButton: boolean = false;
   @Input() showEditButton: boolean = false;
 
 
-  //observable variables
+  //subscription variables
   removeEventFromOrgObs$: Subscription;
   getEventsObs$: Subscription;
   removeEventFromUserObs$: Subscription
@@ -39,14 +43,12 @@ export class EventComponent implements OnInit, OnDestroy {
   constructor(private dataService: DataService, private navigateService: NavigateService, private router: Router, private editEventService: EditEventService) { }
 
   ngOnInit(): void {
-
-    console.log('eventId', this.eventId)
-    console.log('eventName', this.eventName)
-
   }
 
+  //executed when edit event button is clicked
   editEvent(id: string) {
 
+    //initialize the event information signals in navigate service 
     this.navigateService.editEvent.set(true);
     this.editEventService.eventName.set(this.eventName);
     this.editEventService.eventLocation.set(this.location);
@@ -114,7 +116,6 @@ export class EventComponent implements OnInit, OnDestroy {
             this.navigateService.uel = upcomingList
 
 
-            console.log(this.navigateService.uel);
 
           },
           error: (err) => {
@@ -134,7 +135,6 @@ export class EventComponent implements OnInit, OnDestroy {
     this.removeEventFromUserObs$ = this.dataService.getUserWithId(this.dataService.userId()).subscribe({
       next: (res) => {
 
-        console.log("yo sup")
         //store the events in a temp array
         let eventIdList: string[] = res.payload.events;
 
@@ -186,7 +186,7 @@ export class EventComponent implements OnInit, OnDestroy {
 
   joinEvent(id: string) {
 
-    
+
     console.log('id', id)
     let userId = this.dataService.userId();
     console.log('join clicked')
@@ -248,21 +248,27 @@ export class EventComponent implements OnInit, OnDestroy {
 
   }
 
+  //on destroy
   ngOnDestroy(): void {
 
-  //   console.log("event ondestroy")
+    //unsubscribe all subscriptions
+    if (this.getEventsObs$)
+      this.getEventsObs$.unsubscribe();
 
-  //   console.log(this.getEventsObs$, this.joinEventObs$,
-  //     this.removeEventFromOrgObs$, this.updateUserAfterJoinObs$,
-  //     this.removeEventFromUserObs$, this.updateUserAfterRemove$
-  //   )
-  
-  //   this.getEventsObs$.unsubscribe();
-  //   this.joinEventObs$.unsubscribe();
-  //   this.removeEventFromOrgObs$.unsubscribe();
-  //   this.updateUserAfterRemove$.unsubscribe();
-  //   this.removeEventFromUserObs$.unsubscribe();
-  //   this.updateUserAfterJoinObs$.unsubscribe();
+    if (this.joinEventObs$)
+      this.joinEventObs$.unsubscribe();
+
+    if (this.removeEventFromOrgObs$)
+      this.removeEventFromOrgObs$.unsubscribe();
+
+    if (this.updateUserAfterRemove$)
+      this.updateUserAfterRemove$.unsubscribe();
+
+    if (this.removeEventFromUserObs$)
+      this.removeEventFromUserObs$.unsubscribe();
+
+    if (this.updateUserAfterJoinObs$)
+      this.updateUserAfterJoinObs$.unsubscribe();
   }
 
 }

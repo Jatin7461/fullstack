@@ -1,50 +1,36 @@
-const express = require('express')
-const orgApp = express.Router();
+
+
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const expressasynchandler = require('express-async-handler')
 
+
+//import organization model
 const Org = require('../db.js').Org;
 
 
-
+//find organization
 const getOrgs = async (req, res, next) => {
 
-    console.log("fetching orgs")
+    //use findOne method to find the organization with given email
     let orgs = await Org.findOne({ email: req.params.email });
 
-    console.log("fetched org")
-    console.log(orgs)
-
+    //if org is not found 
     if (!orgs) {
         res.send({ message: "No org with current Email found", payload: null })
     }
+    //when org is found
     else {
         res.status(200).send({ message: "Orgs", payload: orgs })
     }
 }
 
-// orgApp.get('/orgs', async (req, res, next) => {
-//     try {
-
-//         console.log("fetching orgs")
-//         let orgs = await Org.find();
-
-//         console.log("fetched orgs")
-//         console.log(orgs)
-//         res.status(200).send({ message: "Orgs", payload: orgs })
-//     }
-//     catch (err) {
-//         next();
-//     }
-
-// })
-
-
+//add a new organization
 const addOrg = async (req, res, next) => {
 
+    //get the organization details from request body
     let org = req.body;
 
+    //validate the inputs
     if (!org.name || !org.password || !org.email) {
         if (!org.name) return res.send({ message: "Name not entered" })
 
@@ -52,25 +38,27 @@ const addOrg = async (req, res, next) => {
         if (!org.email) return res.send({ message: "email not entered" })
     }
 
-
+    
     let orgFromDb = await Org.findOne({ name: org.name })
     let orgEmailFromDb = await Org.findOne({ email: org.email });
+    //if organization with same name already exists
     if (orgFromDb) {
         res.send({ message: "Org already exists" })
     }
-
+    //if same email found 
     else if (orgEmailFromDb) {
         res.send({ message: "Email already exists" })
     }
     else {
 
-        console.log("reached here")
+        //hash the password and update the password as hashed password
         let hashedPass = await bcryptjs.hash(org.pass, 5);
         org.pass = hashedPass;
 
-        console.log("reached here too", org)
+        //add the org
         let newOrg = await Org.create(org)
-        console.log("reached here three")
+
+        //send the response
         res.status(200).send({ message: "new org created", payload: newOrg })
     }
 }
@@ -78,9 +66,11 @@ const addOrg = async (req, res, next) => {
 
 
 
-
+// when organization logs in
 const loginOrg = async (req, res) => {
-    let org = req.body, email = org.email, password = org.pass;
+
+    //get the org from request body
+    let  org = req.body, email = org.email, password = org.pass;
 
     if (!email || !password) {
         return res.send({ message: 'Incomplete Credentials' })

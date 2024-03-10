@@ -18,15 +18,22 @@ export class LoginComponent {
     email: new FormControl('', Validators.required),
     pass: new FormControl(''),
   });
+  
+    signUpAs = signal('')
+    signUpFlag = signal(true);
 
   constructor(private navigateService: NavigateService, private router: Router) { }
 
 
   ngOnInit(): void {
+
+    //signal values to differentiate between user and organization
     this.signUpAs = this.navigateService.signUpAs
     this.signUpFlag = this.navigateService.signUpFlag
     this.showError = this.navigateService.signInError;
 
+
+    //update header buttons
     this.navigateService.showLogout = false;
     this.navigateService.showSignIn = true;
     this.navigateService.showSignUp = true;
@@ -34,12 +41,8 @@ export class LoginComponent {
 
 
 
-  signUpAs = signal('')
-  signUpFlag = signal(true);
-
   //change sign in as user or organization
   changeSignUpAs() {
-    console.log('sign in not sign up')
     this.navigateService.changeSignUpAs();
   }
 
