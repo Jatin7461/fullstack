@@ -1,9 +1,10 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscribable, Subscription, find } from 'rxjs';
 import { DataService } from '../data.service';
 import { NavigateService } from '../navigate.service';
+import { NgToastService } from 'ng-angular-popup';
 
 @Component({
   selector: 'app-register',
@@ -41,7 +42,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
   file: File;
   fileName: String = '';
 
-  constructor(private navigateService: NavigateService, private dataService: DataService, private router: Router) { }
+  toast = inject(NgToastService);
+  constructor(private navigateService: NavigateService, private dataService: DataService, private router: Router) {
+    console.log('construction')
+  }
 
   ngOnInit(): void {
 
@@ -54,6 +58,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.navigateService.showLogout = false;
     this.navigateService.showSignIn = true;
     this.navigateService.showSignUp = true;
+
 
   }
 
@@ -74,7 +79,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     confirmPass: new FormControl('')
   })
 
-  
+
   signUpAs = signal('')
   signUpFlag = signal(true);
   placeholder = signal('')
@@ -88,6 +93,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
   //executes when sign up button is clicked
   onSignUp() {
     this.emailExists = false;
+    console.log('on sign up', this.toast)
+    this.toast.success({ detail: "SUCCESS", summary: "yo", duration: 3000 })
 
     //when signing up as an organizatoin
     if (this.signUpAs() === 'Organization') {
@@ -109,13 +116,16 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   //sign up as an organization
   signUpAsOrg(org: any) {
-    
+
     //fetch all the inputs and validate the form
     let { name, email, pass, confirmPass } = org;
     let validateForm = this.validateOrgForm({ name, email, pass, confirmPass });
 
     //return if inputs are invalid
-    if (!validateForm) return
+    if (!validateForm) {
+      this.toast.error({ detail: "ERROR", summary: "Invalid Credentials", duration: 3000 })
+      return
+    }
 
     //fetch all the orgs and check if organization with email already exists
     this.getOrgs$ = this.dataService.getOrgs(email).subscribe({
@@ -125,6 +135,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
           //no organization with same email exists -> add the organization
           this.addOrganization$ = this.dataService.addOrganization({ name, email, pass }).subscribe({
             next: (res) => {
+              console.log('registeration successfull')
+              localStorage.setItem('register', 'success');
               this.router.navigate(['login']);
             }
           });
@@ -150,7 +162,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
     let validateForm = this.validateUserForm(user)
 
     //return if inputs are invalid
-    if (!validateForm) return;
+    if (!validateForm) {
+      this.toast.error({ detail: "ERROR", summary: "Invalid Credentials", duration: 3000 })
+      return;
+    }
 
 
     //check if user already exists
@@ -162,6 +177,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
           //user does not exists -> add user
           this.addUser$ = this.dataService.addUser({ name: firstName + ' ' + lastName, email, pass, events: [] }).subscribe({
             next: (res) => {
+              localStorage.setItem('register', 'success');
               this.router.navigate(['login']);
             }
           });
@@ -201,7 +217,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   //validate organization register inputs
   validateOrgForm(org) {
-    
+
     //fetch all inputs and validate them
     let { name, email, pass, confirmPass } = org;
     let validateEmail = this.validateEmail(email);

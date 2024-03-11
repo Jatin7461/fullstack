@@ -2,6 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NavigateService } from '../navigate.service';
 import { Router } from '@angular/router';
+import { NgToastService } from 'ng-angular-popup';
 
 @Component({
   selector: 'app-login',
@@ -18,11 +19,11 @@ export class LoginComponent {
     email: new FormControl('', Validators.required),
     pass: new FormControl(''),
   });
-  
-    signUpAs = signal('')
-    signUpFlag = signal(true);
 
-  constructor(private navigateService: NavigateService, private router: Router) { }
+  signUpAs = signal('')
+  signUpFlag = signal(true);
+
+  constructor(private navigateService: NavigateService, private router: Router, private toast: NgToastService) { }
 
 
   ngOnInit(): void {
@@ -37,12 +38,15 @@ export class LoginComponent {
     this.navigateService.showLogout = false;
     this.navigateService.showSignIn = true;
     this.navigateService.showSignUp = true;
+
+
   }
 
 
 
   //change sign in as user or organization
   changeSignUpAs() {
+    this.showError.set(false)
     this.navigateService.changeSignUpAs();
   }
 

@@ -2,20 +2,20 @@ import { Injectable, OnDestroy, OnInit, Signal, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { DataService } from './data.service';
+import { NgToastComponent, NgToastService } from 'ng-angular-popup';
 
 @Injectable({
   providedIn: 'root'
 })
-export class NavigateService implements OnInit,OnDestroy {
+export class NavigateService implements OnInit, OnDestroy {
 
-  constructor(private router: Router, private dataService: DataService) { }
+  constructor(private router: Router, private dataService: DataService, private toast: NgToastService) { }
   ngOnInit(): void {
     // throw new Error('Method not implemented.');
-    console.log("hi im working")
   }
 
 
-  
+
   userLoginObs$: Subscription;
   OrgLoginObs$: Subscription;
   getEventsObs$: Subscription;
@@ -43,7 +43,7 @@ export class NavigateService implements OnInit,OnDestroy {
 
   companyName = signal('');
   signInError = signal(false);
-  
+
   signUpAs = signal("Organization")
   placeholder = signal('')
 
@@ -51,6 +51,7 @@ export class NavigateService implements OnInit,OnDestroy {
 
   changeSignUpAs() {
     console.log('first called')
+    
     if (this.signUpFlag()) {
 
       this.signUpAs.set("User")
@@ -61,7 +62,7 @@ export class NavigateService implements OnInit,OnDestroy {
       this.signUpAs.set("Organization")
     }
     console.log('second called')
-    
+
     this.signUpFlag.set(!this.signUpFlag());
     console.log('third called', this.signUpFlag())
   }
@@ -70,13 +71,14 @@ export class NavigateService implements OnInit,OnDestroy {
   onSignIn(email: any, pass: any) {
     if (this.signUpAs() === "Organization") {
 
-      
+
       this.OrgLoginObs$ = this.dataService.loginOrg({ email, pass }).subscribe({
         next: (res) => {
           console.log('login res is : ', res)
           console.log(email, pass)
           if (!res.payload) {
             this.signInError.set(true);
+            this.toast.error({ detail: "ERROR", summary: "Invalid Credentials", duration: 3000 })
           }
           else {
             localStorage.setItem('token', res.token)
@@ -92,15 +94,15 @@ export class NavigateService implements OnInit,OnDestroy {
         error: (err) => {
           console.log(err)
         }
-        
-        
+
+
       })
     }
     else {
 
       this.userLoginObs$ = this.dataService.userLogin({ email, password: pass }).subscribe({
         next: (res) => {
-          
+
           console.log('res is', res)
           if (res.payload) {
             this.dataService.userId.set(res.payload._id);
@@ -128,7 +130,7 @@ export class NavigateService implements OnInit,OnDestroy {
                 for (let event of res.payload) {
                   for (let userEvent of this.dataService.userEventsWithIdOnly()) {
                     if (userEvent === event['id'])
-                    arr.push(event);
+                      arr.push(event);
                   }
                 }
                 console.log('res is ', res);
@@ -152,6 +154,7 @@ export class NavigateService implements OnInit,OnDestroy {
 
           }
           else {
+            this.toast.error({ detail: "ERROR", summary: "Invalid Credentials", duration: 3000 })
             this.signInError.set(true)
           }
         },
@@ -163,9 +166,9 @@ export class NavigateService implements OnInit,OnDestroy {
     }
   }
 
-  
+
   validateCredentials() {
-    
+
   }
 
 
@@ -182,7 +185,7 @@ export class NavigateService implements OnInit,OnDestroy {
   }
 
   onUpcomingEvents() {
-    
+
     this.showUpcomingEvents.set(true)
     this.showPastEvents.set(false)
     this.showOngoingEvents.set(false)
@@ -202,12 +205,12 @@ export class NavigateService implements OnInit,OnDestroy {
   }
 
 
-  
+
 
   organizeEvents() {
 
   }
-  
+
   calculateTime(event: any): string {
 
 
@@ -223,7 +226,7 @@ export class NavigateService implements OnInit,OnDestroy {
       currTime = "0" + currTime
     }
     else if (currTime.length == 2)
-    currTime = "00" + currTime
+      currTime = "00" + currTime
     else if (currTime.length == 1)
       currTime = "000" + currTime
     else if (currTime.length == 0)
@@ -237,7 +240,7 @@ export class NavigateService implements OnInit,OnDestroy {
       return 'past';
     }
     else return 'upcoming'
-    
+
 
 
 
