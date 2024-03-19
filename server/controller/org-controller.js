@@ -77,23 +77,19 @@ const loginOrg = async (req, res) => {
     }
 
     let orgFound = await Org.findOne({ email: email })
-    console.log('org found', orgFound)
 
 
     if (!orgFound) {
         return res.send({ message: "No Org Found" })
     }
 
-    console.log(orgFound.email, orgFound.pass)
     let passwordMatch = await bcryptjs.compare(password, orgFound.pass);
-    console.log('password match', passwordMatch)
     if (!passwordMatch) {
         return res.send({ message: "Invalid password" })
     }
 
 
     const token = jwt.sign({ email: email }, "abcdefgh", { expiresIn: "30m" })
-    console.log('token is ', token)
     res.send({ message: "Login Success", token: "Bearer " + token, payload: orgFound })
 
 

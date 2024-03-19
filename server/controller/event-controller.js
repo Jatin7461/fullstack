@@ -61,12 +61,10 @@ const deleteEvent = async (req, res, next) => {
 
 const verify = async (req, res) => {
 
-    console.log(req.body);
     let bearerToken = req.body.token
     const token = bearerToken.split(' ')[1];
 
     let decodedToken = jwt.verify(token, 'abcdefgh');
-    console.log('decoded token is', decodedToken)
     res.send({ message: "token valid" })
 
 }
