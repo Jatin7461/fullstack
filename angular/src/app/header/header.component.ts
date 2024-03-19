@@ -47,8 +47,9 @@ export class HeaderComponent implements OnInit {
     this.dataService.OrgEvents.set([])
 
 
-    //remove the token
-    localStorage.removeItem('token')
+    //empty the local storage
+    localStorage.clear();
+
   }
 
   //go to homepage

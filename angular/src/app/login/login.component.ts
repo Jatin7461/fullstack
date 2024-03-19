@@ -11,13 +11,13 @@ import { NgToastService } from 'ng-angular-popup';
 })
 export class LoginComponent {
 
-
+  //signal used to display error message
   showError = signal(false);
 
-
+  //login details form
   loginDetails = new FormGroup({
-    email: new FormControl('', Validators.required),
-    pass: new FormControl(''),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    pass: new FormControl('', [Validators.required]),
   });
 
   signUpAs = signal('')
@@ -45,19 +45,26 @@ export class LoginComponent {
 
 
   //change sign in as user or organization
-  changeSignUpAs() {
+  changeSignUpAs(): void {
     this.showError.set(false)
     this.navigateService.changeSignUpAs();
   }
 
   //when sign in is clicked
-  onSignIn() {
+  onSignIn(): void {
+
+    if (!this.loginDetails.valid) {
+      this.toast.error({ duration: 1500, detail: "Invalid details", summary: "Invalid details" })
+      this.showError.set(true)
+      return;
+    }
+
     let { email, pass } = this.loginDetails.value
     this.navigateService.onSignIn(email, pass);
   }
 
   //go to register component
-  goToRegister() {
+  goToRegister(): void {
     this.router.navigate(['register'])
   }
 

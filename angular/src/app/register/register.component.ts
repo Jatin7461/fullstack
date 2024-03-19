@@ -65,17 +65,17 @@ export class RegisterComponent implements OnInit, OnDestroy {
   orgSignUpDetails = new FormGroup({
     "name": new FormControl('', [Validators.required]),
     "email": new FormControl('', [Validators.required, Validators.email]),
-    "pass": new FormControl(''),
-    "confirmPass": new FormControl(''),
+    "pass": new FormControl('', Validators.required),
+    "confirmPass": new FormControl('', Validators.required),
   })
 
   //form group for user registeration
   userSignUpDetails = new FormGroup({
     firstName: new FormControl('', Validators.required),
-    lastName: new FormControl('', [Validators.required]),
-    email: new FormControl('', Validators.email),
-    pass: new FormControl(''),
-    confirmPass: new FormControl('')
+    lastName: new FormControl(''),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    pass: new FormControl('', Validators.required),
+    confirmPass: new FormControl('', Validators.required)
   })
 
 
@@ -91,15 +91,27 @@ export class RegisterComponent implements OnInit, OnDestroy {
   //executes when sign up button is clicked
   onSignUp() {
     this.emailExists = false;
-    this.toast.success({ detail: "SUCCESS", summary: "yo", duration: 3000 })
 
     //when signing up as an organizatoin
     if (this.signUpAs() === 'Organization') {
+
+      if (!this.orgSignUpDetails.valid) {
+        this.toast.error({ "detail": "Invalid details", "duration": 1500, "summary": "Invalid details" })
+        this.validateOrgForm(this.orgSignUpDetails.value)
+        return;
+      }
+
       let { name, email, pass, confirmPass } = this.orgSignUpDetails.value;
       this.signUpAsOrg({ name, email, pass, confirmPass });
     }
     //when signing up as a user/employee
     else {
+
+      if (!this.userSignUpDetails.valid) {
+        this.toast.error({ "detail": "Invalid details", "duration": 1500, "summary": "Invalid details" })
+        this.validateUserForm(this.userSignUpDetails.value)
+        return
+      }
       let { firstName, lastName, email, pass, confirmPass } = this.userSignUpDetails.value;
       this.signUpAsUser({ firstName, lastName, email, pass, confirmPass })
 
