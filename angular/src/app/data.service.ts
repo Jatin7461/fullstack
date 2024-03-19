@@ -7,10 +7,16 @@ import { Observable } from 'rxjs';
 })
 export class DataService {
 
-
+  //signal used to store user id
   userId = signal('');
+
+  //signal used to store user events
   userEvents = signal([]);
+
+  //signal used to store the user events 
   userEventsWithIdOnly = signal([]);
+
+  //signal used to store organization events
   OrgEvents = signal([]);
 
 
@@ -19,78 +25,76 @@ export class DataService {
 
   constructor(private httpClient: HttpClient) { }
 
-  addUser(user: any) {
-    console.log("user added", user);
 
+  //api call to create a new user
+  addUser(user: any): Observable<any> {
     return this.httpClient.post("http://localhost:4000/user-api/users", user)
   }
 
-  addOrganization(org: any) {
-    console.log("org added", org);
+  //api call to create a new organization
+  addOrganization(org: any): Observable<any> {
     return this.httpClient.post("http://localhost:4000/org-api/organizations", org)
   }
 
-
-  getOrgs(email: any) {
+  //api call to get organization with given email
+  getOrgs(email: any): Observable<any> {
     return this.httpClient.get<any>("http://localhost:4000/org-api/organizations/" + email);
   }
 
-
-  addEvent(event: any) {
+  //api call to create a new event
+  addEvent(event: any): Observable<any> {
     return this.httpClient.post("http://localhost:4000/event-api/events", event, { headers: { authorization: localStorage.getItem('token') } });
   }
 
-
-  getEvents() {
-    console.log("called", this.headers)
+  //api call to get all the events
+  getEvents(): Observable<any> {
     this.headers.headers.authorization = localStorage.getItem('token')
     return this.httpClient.get<any>("http://localhost:4000/event-api/events", { headers: { authorization: localStorage.getItem('token') } });
   }
 
-  getUsers(email: any) {
-    console.log("this called")
+  //api call to get user with given email
+  getUsers(email: any): Observable<any> {
 
     let url = `http://localhost:4000/user-api/users?email=${email}`
     return this.httpClient.get<any>(url);
   }
 
-
-  userLogin(userData: any) {
+  //api call when user logins
+  userLogin(userData: any): Observable<any> {
     return this.httpClient.post<any>('http://localhost:4000/user-api/login', userData);
   }
 
-  loginOrg(orgData: any) {
+  //api call when an organization logins
+  loginOrg(orgData: any): Observable<any> {
     return this.httpClient.post<any>('http://localhost:4000/org-api/login', orgData)
   }
 
-  getUserWithId(id: any) {
+  //api call to get a user with given id
+  getUserWithId(id: any): Observable<any> {
     let url = `http://localhost:4000/user-api/users/${id}`;
-    console.log('getting user with id', id, 'using the url', url, { headers: { authorization: localStorage.getItem('token') } })
     return this.httpClient.get<any>(url, this.headers);
   }
 
-  updateUserWithId(id: any, user: any) {
+  //api call to update user with given id
+  updateUserWithId(id: any, user: any): Observable<any> {
     let url = `http://localhost:4000/user-api/users/${id}`;
 
     return this.httpClient.put(url, user, { headers: { authorization: localStorage.getItem('token') } })
 
   }
 
-
-  deleteEventWithId(id: string) {
+  //api call to delete event with given id
+  deleteEventWithId(id: string) :Observable<any>{
 
     let url = `http://localhost:4000/event-api/events/${id}`;
     return this.httpClient.delete(url, { headers: { authorization: localStorage.getItem('token') } });
 
   }
 
-
-  updateEvent(id: string, event: any) {
-
+  //api call to update event with given id
+  updateEvent(id: string, event: any):Observable<any> {
     let url = `http://localhost:4000/event-api/events/${id}`;
-    console.log('updating event with url', url)
     return this.httpClient.put(url, event, { headers: { authorization: localStorage.getItem('token') } });
-
   }
 
 }

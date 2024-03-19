@@ -16,7 +16,7 @@ export class UserComponent implements OnInit, OnDestroy {
   userEvents: any = signal([])
   OrgEvents = signal([])
 
-  yourEvents = false;
+  yourEvents = true;
   upcomingEvents = false;
 
   dataService = inject(DataService)
@@ -29,7 +29,6 @@ export class UserComponent implements OnInit, OnDestroy {
     if (this.dataService.userId() === '') {
       this.dataService.userId.set(localStorage.getItem('userId'));
     }
-    console.log('user id is', this.dataService.userId())
     this.getUserWithIdObs$ = this.dataService.getUserWithId(this.dataService.userId()).subscribe({
       next: (res) => {
 
@@ -38,15 +37,11 @@ export class UserComponent implements OnInit, OnDestroy {
           return;
         }
 
-        console.log('res after joining', res)
 
         let eventIdList = res.payload.events
 
-        console.log(res);
-        console.log(eventIdList);
         let eventsArr: any = [];
         this.dataService.OrgEvents.set(JSON.parse(localStorage.getItem('orgEvents')))
-        console.log('orgevents are:', typeof (this.dataService.OrgEvents()), this.dataService.OrgEvents())
         for (let event of this.dataService.OrgEvents()) {
           for (let eve of eventIdList) {
             if (eve == event['_id']) {
@@ -56,7 +51,6 @@ export class UserComponent implements OnInit, OnDestroy {
         }
 
         this.userEvents.set(eventsArr);
-        console.log('userevent array in user component is ', this.userEvents())
 
       },
       error: (err) => {
@@ -78,12 +72,10 @@ export class UserComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     // throw new Error('Method not implemented.');
-    console.log('user component destroyed')
-    localStorage.removeItem('orgEvents')
-    localStorage.removeItem('userId')
-    localStorage.removeItem('companyName')
-    localStorage.removeItem('token')
-    this.getUserWithIdObs$.unsubscribe();
+    localStorage.clear()
+
+    if (this.getUserWithIdObs$)
+      this.getUserWithIdObs$.unsubscribe();
   }
 
 }

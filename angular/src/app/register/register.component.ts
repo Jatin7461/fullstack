@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subscribable, Subscription, find } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { DataService } from '../data.service';
 import { NavigateService } from '../navigate.service';
 import { NgToastService } from 'ng-angular-popup';
@@ -44,7 +44,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   toast = inject(NgToastService);
   constructor(private navigateService: NavigateService, private dataService: DataService, private router: Router) {
-    console.log('construction')
   }
 
   ngOnInit(): void {
@@ -72,9 +71,9 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   //form group for user registeration
   userSignUpDetails = new FormGroup({
-    firstName: new FormControl(''),
-    lastName: new FormControl(''),
-    email: new FormControl(''),
+    firstName: new FormControl('', Validators.required),
+    lastName: new FormControl('', [Validators.required]),
+    email: new FormControl('', Validators.email),
     pass: new FormControl(''),
     confirmPass: new FormControl('')
   })
@@ -87,13 +86,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
   //change sign up as user or organization
   changeSignUpAs() {
     this.navigateService.changeSignUpAs();
-    console.log(this.signUpFlag());
   }
 
   //executes when sign up button is clicked
   onSignUp() {
     this.emailExists = false;
-    console.log('on sign up', this.toast)
     this.toast.success({ detail: "SUCCESS", summary: "yo", duration: 3000 })
 
     //when signing up as an organizatoin
@@ -135,7 +132,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
           //no organization with same email exists -> add the organization
           this.addOrganization$ = this.dataService.addOrganization({ name, email, pass }).subscribe({
             next: (res) => {
-              console.log('registeration successfull')
               localStorage.setItem('register', 'success');
               this.router.navigate(['login']);
             }
@@ -248,7 +244,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
       }
       if (!validateEmail) {
         this.invalidEmail = true;
-        console.log('returning invalid email')
       }
       if (!email) {
         this.emailRequired = true;
@@ -265,8 +260,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
     let { firstName, lastName, email, pass, confirmPass } = user;
 
 
-    console.log(firstName, lastName, email, pass, confirmPass)
-    console.log('verifying credentials')
 
     let validateEmail = this.validateEmail(email);
 
@@ -311,7 +304,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
         this.userPassConfirmRequired = true;
       }
 
-      console.log('nope');
       return false;
 
     }

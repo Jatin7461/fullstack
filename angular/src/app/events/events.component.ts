@@ -11,7 +11,7 @@ import { NavigateService } from '../navigate.service';
 export class EventsComponent implements OnInit, OnDestroy {
 
 
-
+  //signals used to show/hide 
   showPastEvents = signal(false);
   showUpcomingEvents = signal(false);
   showOngoingEvents = signal(false);
@@ -26,85 +26,77 @@ export class EventsComponent implements OnInit, OnDestroy {
   upcomingEventsList: any = signal([])
   ongoingEventsList: any = signal([])
 
-
-  // getEventsObs$:Subscription
+  //subscription variable
+  getEventsObs$: Subscription
 
   constructor(public navigateService: NavigateService, private dataService: DataService) { }
 
 
   ngOnInit(): void {
-
+    //empty the arrays which are used to display to avoid repetition of data
     this.pastEventsList.set([])
     this.upcomingEventsList.set([])
     this.ongoingEventsList.set([])
 
+    //initialize signals used to show/hide events
     this.showPastEvents = this.navigateService.showPastEvents
     this.showUpcomingEvents = this.navigateService.showUpcomingEvents
     this.showOngoingEvents = this.navigateService.showOngoingEvents
 
     //arrange all events in their respective lists
-    this.dataService.getEvents().subscribe({
+    this.getEventsObs$ = this.dataService.getEvents().subscribe({
       next: (res) => {
 
+        //create local events array used to separate past,upcoming and ongoing events
         let pastList = []
         let upcomingList = []
         let ongoingList = []
+
+        //get the current data
         let currDate = new Date().toISOString().slice(0, 10);
+        
+        //iterate through events and separate them in their respective arrays
         for (let event of res.payload) {
-          // console.log(event);
+
+          //if event is today
           if (event.eventDate === currDate) {
 
             //get the status of the event 
             let status: string = this.calculateTime(event);
-            console.log(event.eventName, status)
+
+            //add the event according to its time
             if (status === 'ongoing') {
-              // this.navigateService.ongoingEventsList.set(this.navigateService.ongoingEventsList().push(event));
-              // this.navigateService.ongoingEventsList.push(event);
               ongoingList.push(event)
             }
             else if (status === 'past') {
-
-              // this.navigateService.pastEventsList.set(this.navigateService.pastEventsList().push(event));
               pastList.push(event)
-              // this.navigateService.pastEventsList.push(event);
             }
             else {
-              // this.navigateService.upcomingEventsList.set(this.navigateService.upcomingEventsList().push(event));
               upcomingList.push(event)
-              // this.navigateService.upcomingEventsList.push(event);
             }
-
-
-
           }
+          //if event is in future
           else if (event.eventDate >= currDate) {
-            // this.navigateService.upcomingEventsList.set(this.navigateService.upcomingEventsList().push(event));
             upcomingList.push(event)
-            // this.navigateService.upcomingEventsList.push(event);
           }
+          //if event is in the past
           else {
-            // this.navigateService.pastEventsList.set(this.navigateService.pastEventsList().push(event));
             pastList.push(event)
-            // this.navigateService.pastEventsList.push(event)
           }
 
         }
-
-
 
         this.pastEventsList = this.navigateService.pastEventsList
         this.upcomingEventsList = this.navigateService.upcomingEventsList
         this.ongoingEventsList = this.navigateService.ongoingEventsList
 
 
-        // this.pastEventsList.set(pastList)
-        // this.upcomingEventsList.set(upcomingList)
-        // this.ongoingEventsList.set(ongoingList)
-
         this.uel = upcomingList
         this.pel = pastList
         this.oel = ongoingList
 
+
+        //set the respective arrays in the navigate service
         this.navigateService.uel = this.uel
         this.navigateService.pel = this.pel
         this.navigateService.oel = this.oel
@@ -120,17 +112,21 @@ export class EventsComponent implements OnInit, OnDestroy {
 
 
 
-
+  //function used to return the status of the event such as past event, upcoming event or ongoing event
   calculateTime(event: any): string {
 
+    //get current date
     let currDate = new Date();
+    //get current hour and minutes
     let currHour = currDate.getHours();
-    console.log('currMin is', currDate.getMinutes())
     let currMin = currDate.getMinutes().toString();
+
+    //get start and end time of event
     let start = event.startTime.replace(':', '');
     let end = event.endTime.replace(':', '');
 
     let currTime = currHour + currMin
+
 
     if (currTime.length == 3) {
       currTime = "0" + currTime
@@ -142,23 +138,20 @@ export class EventsComponent implements OnInit, OnDestroy {
     else if (currTime.length == 0)
       currTime = "0000"
 
-
-    console.log('times', currTime, start, end);
+    //compare the times and return the status accordingly
     if (currTime <= end && currTime >= start)
       return 'ongoing'
     if (currTime > end) {
       return 'past';
     }
     else return 'upcoming'
-
-
-
-
-
   }
 
+
   ngOnDestroy(): void {
-    // this.getEventsObs$.unsubscribe();
+    //unsubscribe all the events
+    if (this.getEventsObs$)
+      this.getEventsObs$.unsubscribe();
   }
 
 }

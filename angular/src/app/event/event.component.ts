@@ -1,11 +1,10 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
-// import { error, log } from 'node:console';
-
 import { NavigateService } from '../navigate.service';
 import { Router } from '@angular/router';
 import { EditEventService } from '../edit-event.service';
 import { Subscription } from 'rxjs';
+import { NgToastService } from 'ng-angular-popup';
 
 @Component({
   selector: 'app-event',
@@ -40,7 +39,7 @@ export class EventComponent implements OnInit, OnDestroy {
   updateUserAfterJoinObs$: Subscription
 
 
-  constructor(private dataService: DataService, private navigateService: NavigateService, private router: Router, private editEventService: EditEventService) { }
+  constructor(private dataService: DataService, private navigateService: NavigateService, private router: Router, private editEventService: EditEventService, private toast: NgToastService) { }
 
   ngOnInit(): void {
   }
@@ -56,7 +55,6 @@ export class EventComponent implements OnInit, OnDestroy {
     this.editEventService.endTime.set(this.endTime);
     this.editEventService.eventDate.set(this.date);
     this.editEventService.eventId.set(id);
-    console.log("event name is ", this.eventName, id)
     this.router.navigate(['create-event'])
 
   }
@@ -74,16 +72,20 @@ export class EventComponent implements OnInit, OnDestroy {
         this.getEventsObs$ = this.dataService.getEvents().subscribe({
           next: (res) => {
 
-
+            //declare local arrays to differentiate between past, upcoming and ongoing events
             let pastList: any = []
             let upcomingList: any = []
             let ongoingList: any = []
-            let currDate = new Date().toISOString().slice(0, 10);
-            for (let event of res.payload) {
-              if (event.eventDate === currDate) {
 
+            //get the current date
+            let currDate = new Date().toISOString().slice(0, 10);
+
+            //iterate through events and separate them in diff arrays
+            for (let event of res.payload) {
+              //if event is today
+              if (event.eventDate === currDate) {
+                //get the status of event
                 let status: string = this.navigateService.calculateTime(event);
-                console.log(event.eventName, status)
                 if (status === 'ongoing') {
                   ongoingList.push(event)
                 }
@@ -94,29 +96,20 @@ export class EventComponent implements OnInit, OnDestroy {
                 else {
                   upcomingList.push(event)
                 }
-
-
-
               }
+              //if event is in future
               else if (event.eventDate >= currDate) {
                 upcomingList.push(event)
               }
+              //if event is in past
               else {
                 pastList.push(event)
               }
-
             }
-
-
-
-
-
+            //set the arrays to arrays in navigate service
             this.navigateService.pel = pastList
             this.navigateService.oel = ongoingList
             this.navigateService.uel = upcomingList
-
-
-
           },
           error: (err) => {
             console.log(err);
@@ -164,6 +157,7 @@ export class EventComponent implements OnInit, OnDestroy {
           }
         })
 
+        this.toast.success({ detail: "Event Removed", summary: "Event Removed", duration: 1500 })
       },
       error: (err) => {
         console.log(err);
@@ -185,11 +179,7 @@ export class EventComponent implements OnInit, OnDestroy {
   }
 
   joinEvent(id: string) {
-
-
-    console.log('id', id)
     let userId = this.dataService.userId();
-    console.log('join clicked')
 
     //get the user object from users database and update the users event array
     this.joinEventObs$ = this.dataService.getUserWithId(userId).subscribe({
@@ -205,7 +195,7 @@ export class EventComponent implements OnInit, OnDestroy {
 
         //if event exists then return coz we dont want to join the same event again
         if (eventExists) {
-          console.log('not moving forward')
+          this.toast.error({ summary: "Event already joined", duration: 1500, detail: "Error" })
           return;
         }
 
@@ -217,19 +207,19 @@ export class EventComponent implements OnInit, OnDestroy {
         //update the user with updated information
         this.updateUserAfterJoinObs$ = this.dataService.updateUserWithId(userId, res.payload).subscribe({
           next: (res) => {
-            console.log('res', res);
           },
           error: (err) => {
             console.log('err', err);
           }
         })
 
-
+        //get list of events id only
         let eventIdList = res.payload.events;
 
-        console.log(res);
-        console.log(eventIdList);
+        //create a local array
         let eventsArr: any = [];
+
+        //iterate through all the events and store the events whose ids gets matched
         for (let event of this.dataService.OrgEvents()) {
           for (let eve of eventIdList) {
             if (eve == event['_id']) {
@@ -237,8 +227,11 @@ export class EventComponent implements OnInit, OnDestroy {
             }
           }
         }
-        console.log('executing')
+
+        //set the user events array in the signal
         this.dataService.userEvents.set(eventsArr);
+
+        this.toast.success({ detail: "Event Joined", duration: 1500, summary: "Event Joined" })
       },
       error: (err) => {
         console.log(err);

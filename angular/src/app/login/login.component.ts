@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NavigateService } from '../navigate.service';
 import { Router } from '@angular/router';
@@ -39,7 +39,7 @@ export class LoginComponent {
     this.navigateService.showSignIn = true;
     this.navigateService.showSignUp = true;
 
-
+    this.showError.set(false)
   }
 
 

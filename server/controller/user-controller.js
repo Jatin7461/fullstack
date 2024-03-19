@@ -42,7 +42,7 @@ const userLogin = async (req, res) => {
 
 
     if (!userFound) {
-        return res.status(404).send({ message: "No user found" })
+        return res.send({ message: "No user found" })
     }
 
     let passwordMatch = await bcryptjs.compare(password, userFound.password)
@@ -56,7 +56,7 @@ const userLogin = async (req, res) => {
 
     const jwtToken = jwt.sign({ email: email }, "abcdefgh", { expiresIn: "30m" })
 
-    res.send({ message: "User Found", token: "Bearer " + jwtToken, payload: userFound })
+    res.send({ message: "Login Success", token: "Bearer " + jwtToken, payload: userFound })
 
 
 

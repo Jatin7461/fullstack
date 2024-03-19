@@ -7,6 +7,7 @@ export class EditEventService {
 
   constructor() { }
 
+  //signals used to store all events details
   eventName = signal('')
   eventId = signal('')
   eventLocation = signal('')

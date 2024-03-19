@@ -12,11 +12,10 @@ export class CompanyComponent implements OnInit {
 
   }
   ngOnInit(): void {
-    // throw new Error('Method not implemented.');
-    console.log("onnnn")
     this.companyName.set(this.navigateService.companyName())
   }
 
+  //signal used to store company name
   companyName = signal('');
 
   //executes when past events is clicked
