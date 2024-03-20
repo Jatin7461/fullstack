@@ -67,7 +67,7 @@ export class CreateEventComponent implements OnInit, OnDestroy {
   }
 
   //update event function
-  updateEvent() {
+  updateEvent() :void{
     //fetch event form inputs
     let { eventName, eventDate, location, startTime, endTime } = this.eventDetails.value
 
@@ -85,7 +85,7 @@ export class CreateEventComponent implements OnInit, OnDestroy {
 
 
   //create new event
-  onCreateEvent() {
+  onCreateEvent():void {
 
     //fetch event form inputs
     let { eventName, eventDate, location, startTime, endTime } = this.eventDetails.value

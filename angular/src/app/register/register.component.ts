@@ -78,40 +78,48 @@ export class RegisterComponent implements OnInit, OnDestroy {
     confirmPass: new FormControl('', Validators.required)
   })
 
-
+  //signals used to differentiate between user and organization
   signUpAs = signal('')
   signUpFlag = signal(true);
   placeholder = signal('')
 
   //change sign up as user or organization
-  changeSignUpAs() {
+  changeSignUpAs():void {
     this.navigateService.changeSignUpAs();
   }
 
   //executes when sign up button is clicked
-  onSignUp() {
+  onSignUp():void {
     this.emailExists = false;
 
     //when signing up as an organizatoin
     if (this.signUpAs() === 'Organization') {
 
+      //validate the organization form
       if (!this.orgSignUpDetails.valid) {
+        //show a toast message
         this.toast.error({ "detail": "Invalid details", "duration": 1500, "summary": "Invalid details" })
+        //validate each value individually
         this.validateOrgForm(this.orgSignUpDetails.value)
         return;
       }
 
+      //if form details are valid then signup
       let { name, email, pass, confirmPass } = this.orgSignUpDetails.value;
       this.signUpAsOrg({ name, email, pass, confirmPass });
     }
     //when signing up as a user/employee
     else {
-
+      //validate the user register form
       if (!this.userSignUpDetails.valid) {
+        //show error toast message
         this.toast.error({ "detail": "Invalid details", "duration": 1500, "summary": "Invalid details" })
+        //validate each input individually
         this.validateUserForm(this.userSignUpDetails.value)
         return
       }
+
+      //details are valid and register user
       let { firstName, lastName, email, pass, confirmPass } = this.userSignUpDetails.value;
       this.signUpAsUser({ firstName, lastName, email, pass, confirmPass })
 
@@ -119,7 +127,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   //when user/organization registeration is a success -> navigate to login
-  goToSignIn() {
+  goToSignIn():void {
     this.router.navigate(['login']);
   }
 
@@ -140,7 +148,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.getOrgs$ = this.dataService.getOrgs(email).subscribe({
       next: (res) => {
 
-        if (res.payload === null) {
+        if (res.message === "Org not found") {
           //no organization with same email exists -> add the organization
           this.addOrganization$ = this.dataService.addOrganization({ name, email, pass }).subscribe({
             next: (res) => {
@@ -162,7 +170,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   //sign up as a user/employee
-  signUpAsUser(user: any) {
+  signUpAsUser(user: any):void {
 
     //fetch the user register form inputs and validate them
     this.userEmailExists = false;
@@ -181,7 +189,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
       next: (res) => {
 
 
-        if (res.payload === null) {
+        if (res.message === "User Not Found") {
           //user does not exists -> add user
           this.addUser$ = this.dataService.addUser({ name: firstName + ' ' + lastName, email, pass, events: [] }).subscribe({
             next: (res) => {
@@ -200,13 +208,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
         console.log(err)
       }
     })
-
-
-
   }
 
   //validates the email
-  validateEmail(email: String) {
+  validateEmail(email: String):boolean {
 
     if (!email) return false;
 
@@ -224,12 +229,15 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
 
   //validate organization register inputs
-  validateOrgForm(org) {
+  validateOrgForm(org:any):boolean {
 
     //fetch all inputs and validate them
     let { name, email, pass, confirmPass } = org;
+
+    //validate email
     let validateEmail = this.validateEmail(email);
 
+    //hide error messages when inputs are valid
     if (name) {
       this.orgNameRequired = false;
     }
@@ -243,6 +251,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
       this.passwordRequired = false;
     }
 
+
+    //show errors when inputs are invalid
     if (!name || !email || !pass || pass !== confirmPass || !validateEmail) {
       if (!name) {
         this.orgNameRequired = true;
@@ -264,17 +274,20 @@ export class RegisterComponent implements OnInit, OnDestroy {
       return false;
     }
 
+
+    //returning true because all inputs are valid
     return true;
   }
 
   //validate user register inputs
-  validateUserForm(user) {
+  validateUserForm(user:any):boolean {
     let { firstName, lastName, email, pass, confirmPass } = user;
 
 
-
+    //validate the email
     let validateEmail = this.validateEmail(email);
 
+    //hide error when inputs are valid
     if (firstName) {
       this.userNameRequired = false;
     }
@@ -292,7 +305,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
       this.userPassRequired = false;
     }
 
-
+    //show errors when inputs are not valid
     if (!firstName || !email || !pass || !confirmPass || !validateEmail) {
 
       if (!firstName) {
@@ -320,6 +333,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
     }
 
+    //returning true because all inputs are valid
     return true;
 
   }

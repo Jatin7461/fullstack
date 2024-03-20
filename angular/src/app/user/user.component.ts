@@ -60,12 +60,12 @@ export class UserComponent implements OnInit, OnDestroy {
   }
 
 
-  onYourEvents() {
+  onYourEvents():void {
     this.yourEvents = true;
     this.upcomingEvents = false;
   }
 
-  onUpcomingEvents() {
+  onUpcomingEvents():void {
     this.yourEvents = false;
     this.upcomingEvents = true
   }

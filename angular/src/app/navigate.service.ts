@@ -60,7 +60,7 @@ export class NavigateService implements OnInit, OnDestroy {
 
 
   //change sign up as user or organization
-  changeSignUpAs() {
+  changeSignUpAs():void {
 
     //using boolean signal to differentiate between user and organization
     if (this.signUpFlag()) {
@@ -183,14 +183,14 @@ export class NavigateService implements OnInit, OnDestroy {
 
 
   //show past events
-  onPastEvents() {
+  onPastEvents():void {
     this.showPastEvents.set(true)
     this.showUpcomingEvents.set(false)
     this.showOngoingEvents.set(false)
   }
 
   //show upcoming events
-  onUpcomingEvents() {
+  onUpcomingEvents():void {
 
     this.showUpcomingEvents.set(true)
     this.showPastEvents.set(false)
@@ -198,7 +198,7 @@ export class NavigateService implements OnInit, OnDestroy {
   }
 
   //show ongoing events
-  onOngoingEvents() {
+  onOngoingEvents():void {
     this.showOngoingEvents.set(true)
     this.showPastEvents.set(false)
     this.showUpcomingEvents.set(false)

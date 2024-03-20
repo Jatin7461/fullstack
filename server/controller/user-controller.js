@@ -12,10 +12,10 @@ const getEmail = async (req, res, next) => {
     let emid = req.query.email;
     let user = await User.findOne({ email: emid })
     if (!user) {
-        res.send({ payload: null })
+        res.send({message:"User Not Found", payload: null })
     }
     else {
-        res.send({ payload: user })
+        res.send({message:"User Found", payload: user })
     }
 
 }

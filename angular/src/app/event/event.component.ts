@@ -45,7 +45,7 @@ export class EventComponent implements OnInit, OnDestroy {
   }
 
   //executed when edit event button is clicked
-  editEvent(id: string) {
+  editEvent(id: string):void {
 
     //initialize the event information signals in navigate service 
     this.navigateService.editEvent.set(true);
@@ -62,7 +62,7 @@ export class EventComponent implements OnInit, OnDestroy {
 
 
   //function to remove event from Org
-  removeEventFromOrg(id: any) {
+  removeEventFromOrg(id: any):void {
 
     //delete the event from events array
     this.removeEventFromOrgObs$ = this.dataService.deleteEventWithId(id).subscribe({
@@ -124,7 +124,7 @@ export class EventComponent implements OnInit, OnDestroy {
   }
 
   //remove event from user 
-  removeEventFromUser(id: any) {
+  removeEventFromUser(id: any):void {
     //get the user object from users database
     this.removeEventFromUserObs$ = this.dataService.getUserWithId(this.dataService.userId()).subscribe({
       next: (res) => {
@@ -167,7 +167,7 @@ export class EventComponent implements OnInit, OnDestroy {
   }
 
 
-  removeEvent(id: any) {
+  removeEvent(id: any):void {
 
     if (this.navigateService.signUpAs() === 'Organization') {
       this.removeEventFromOrg(id);
@@ -179,7 +179,7 @@ export class EventComponent implements OnInit, OnDestroy {
 
   }
 
-  joinEvent(id: string) {
+  joinEvent(id: string):void {
     let userId = this.dataService.userId();
 
     //get the user object from users database and update the users event array

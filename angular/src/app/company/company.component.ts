@@ -19,23 +19,23 @@ export class CompanyComponent implements OnInit {
   companyName = signal('');
 
   //executes when past events is clicked
-  onPastEvents() {
+  onPastEvents():void {
     this.navigateService.onPastEvents();
   }
 
   //executes when upcoming events is clicked
-  onUpcomingEvents() {
+  onUpcomingEvents():void {
     this.navigateService.onUpcomingEvents();
   }
 
   //executes when ongoing events is clicked
-  onOngoingEvents() {
+  onOngoingEvents():void {
     this.navigateService.onOngoingEvents();
   }
 
 
   //executes when create new event is clicked
-  createNewEvent() {
+  createNewEvent():void {
     this.navigateService.editEvent.set(false);
     this.router.navigate(['create-event'])
   }

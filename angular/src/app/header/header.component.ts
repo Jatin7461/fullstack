@@ -27,7 +27,7 @@ export class HeaderComponent implements OnInit {
   }
 
   // when user logs out
-  onLogout() {
+  onLogout():void {
 
     //empty all the events array
     this.navigateService.pastEventsList = ([])
@@ -53,7 +53,7 @@ export class HeaderComponent implements OnInit {
   }
 
   //go to homepage
-  goHome() {
+  goHome():void{
 
     //update header and to home page
     this.navigateService.showLogout = false;

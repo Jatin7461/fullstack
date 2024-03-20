@@ -16,11 +16,11 @@ const getOrgs = async (req, res, next) => {
 
     //if org is not found 
     if (!orgs) {
-        res.send({ message: "No org with current Email found", payload: null })
+        res.send({ message: "Org not found", payload: null })
     }
     //when org is found
     else {
-        res.status(200).send({ message: "Orgs", payload: orgs })
+        res.status(200).send({ message: "Org Found", payload: orgs })
     }
 }
 
