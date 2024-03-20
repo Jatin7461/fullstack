@@ -115,7 +115,6 @@ export class EventComponent implements OnInit, OnDestroy {
             console.log(err);
           }
         })
-
         this.toast.success({ "duration": 1500, "detail": "Event Removed", "summary": "Event Removed" })
       },
       error: (error) => {

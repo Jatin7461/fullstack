@@ -103,7 +103,7 @@ export class EventsComponent implements OnInit, OnDestroy {
 
       },
       error: (err) => {
-        console.log('the error iss', err);
+        console.log(err);
       }
     })
 

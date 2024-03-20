@@ -42,7 +42,6 @@ app.use(errHandler)
 
 
 app.use((req, res, next) => {
-    console.log('send file executing')
     res.sendFile(path.join(__dirname, '../angular/dist/angular/browser/index.html'))
 })
 

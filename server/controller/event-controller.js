@@ -1,4 +1,3 @@
-
 //import event model
 const { Event } = require('../db.js')
 
@@ -7,18 +6,15 @@ const jwt = require('jsonwebtoken')
 
 //fetch all events
 const getEvents = async (req, res, next) => {
-
     let events = await Event.find()
     res.send({ message: "got the events", payload: events });
 }
 
 //add a new event
 const addEvent = async (req, res, next) => {
-
     //get the event from request body and insert using Model.create() function
     let event = req.body;
     await Event.create(event);
-
     //send the response
     res.send({ message: "Event created" })
 }

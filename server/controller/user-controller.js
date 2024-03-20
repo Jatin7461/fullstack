@@ -4,18 +4,13 @@ const jwt = require('jsonwebtoken')
 
 
 const User = require('../db.js').User
-// userApp.use((req, res, next) => {
-//     usersCollection = req.app.get('usersCollection')
-//     next();
-// })
+
 
 
 const getEmail = async (req, res, next) => {
 
     let emid = req.query.email;
     let user = await User.findOne({ email: emid })
-    console.log(user)
-    // console.log("hihihi")
     if (!user) {
         res.send({ payload: null })
     }
@@ -25,7 +20,7 @@ const getEmail = async (req, res, next) => {
 
 }
 
-//9030966428
+
 
 //user login code
 const userLogin = async (req, res) => {
@@ -114,7 +109,6 @@ const updateUser = async (req, res, next) => {
     const user = req.body
     let dbRes = await User.updateOne({ _id: user._id }, { $set: { ...user } })
 
-    // console.log(dbRes);
 
     res.status(200).send({ message: "User Updated" });
 }

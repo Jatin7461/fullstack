@@ -24,17 +24,14 @@ fdescribe('DataService', () => {
       password: "jatin",
       events: []
     }
-    console.log("adding user lol")
     service.addUser(user).subscribe({
       next: (res) => {
-        console.log('hihi', res)
         expect(res).toBeTruthy()
         expect(res.name).toBe(user.name)
         expect(res.email).toBe(user.email)
       },
       error: (err) => {
 
-        console.log('hihi err', err)
       }
     })
 
@@ -57,13 +54,11 @@ fdescribe('DataService', () => {
 
     service.getUserWithId("65d468f59aff01c4701737cd").subscribe({
       next: (res) => {
-        console.log("resres", res)
         expect(res).toBeTruthy()
         expect(res._id).toBe(user._id)
         expect(res.name).toBe(user.name)
       },
       error: (err) => {
-        console.log("error in id")
 
         expect(err).toBeTruthy()
       }
