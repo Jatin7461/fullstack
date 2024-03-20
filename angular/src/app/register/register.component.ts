@@ -84,12 +84,12 @@ export class RegisterComponent implements OnInit, OnDestroy {
   placeholder = signal('')
 
   //change sign up as user or organization
-  changeSignUpAs():void {
+  changeSignUpAs(): void {
     this.navigateService.changeSignUpAs();
   }
 
   //executes when sign up button is clicked
-  onSignUp():void {
+  onSignUp(): void {
     this.emailExists = false;
 
     //when signing up as an organizatoin
@@ -127,7 +127,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   //when user/organization registeration is a success -> navigate to login
-  goToSignIn():void {
+  goToSignIn(): void {
     this.router.navigate(['login']);
   }
 
@@ -156,7 +156,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
               this.router.navigate(['login']);
             }
           });
-
+          this.toast.success({ summary: "Registeration Successful", duration: 1500, detail: "Registeration Successful" })
         }
         else {
           //organization with the given email already exists
@@ -170,7 +170,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   //sign up as a user/employee
-  signUpAsUser(user: any):void {
+  signUpAsUser(user: any): void {
 
     //fetch the user register form inputs and validate them
     this.userEmailExists = false;
@@ -194,6 +194,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
           this.addUser$ = this.dataService.addUser({ name: firstName + ' ' + lastName, email, pass, events: [] }).subscribe({
             next: (res) => {
               localStorage.setItem('register', 'success');
+
+              //show toast message when user registeration is successful
+              this.toast.success({ "detail": "Registeration Successful", duration: 1500, "summary": "Registeration Successful" })
+
               this.router.navigate(['login']);
             }
           });
@@ -211,7 +215,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   //validates the email
-  validateEmail(email: String):boolean {
+  validateEmail(email: String): boolean {
 
     if (!email) return false;
 
@@ -229,7 +233,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
 
   //validate organization register inputs
-  validateOrgForm(org:any):boolean {
+  validateOrgForm(org: any): boolean {
 
     //fetch all inputs and validate them
     let { name, email, pass, confirmPass } = org;
@@ -280,7 +284,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   //validate user register inputs
-  validateUserForm(user:any):boolean {
+  validateUserForm(user: any): boolean {
     let { firstName, lastName, email, pass, confirmPass } = user;
 
 

@@ -60,7 +60,7 @@ export class NavigateService implements OnInit, OnDestroy {
 
 
   //change sign up as user or organization
-  changeSignUpAs():void {
+  changeSignUpAs(): void {
 
     //using boolean signal to differentiate between user and organization
     if (this.signUpFlag()) {
@@ -107,6 +107,9 @@ export class NavigateService implements OnInit, OnDestroy {
             this.showSignIn = false;
             this.showSignUp = false;
             localStorage.setItem('companyName', res.payload.name)
+
+            //show toast message when organization login is successful
+            this.toast.success({ "detail": "Login Successful", duration: 1500, "summary": "Login Successful" })
 
             //navigate to the company component
             this.router.navigate(['company']);
@@ -155,6 +158,10 @@ export class NavigateService implements OnInit, OnDestroy {
                 this.showLogout = true;
                 this.showSignIn = false;
                 this.showSignUp = false;
+
+                //show toast message when user login is successfull
+                this.toast.success({ "detail": "Login Successful", duration: 1500, "summary": "Login Successful" })
+
                 this.router.navigate(['user']);
                 this.signInError.set(false)
 
@@ -183,14 +190,14 @@ export class NavigateService implements OnInit, OnDestroy {
 
 
   //show past events
-  onPastEvents():void {
+  onPastEvents(): void {
     this.showPastEvents.set(true)
     this.showUpcomingEvents.set(false)
     this.showOngoingEvents.set(false)
   }
 
   //show upcoming events
-  onUpcomingEvents():void {
+  onUpcomingEvents(): void {
 
     this.showUpcomingEvents.set(true)
     this.showPastEvents.set(false)
@@ -198,7 +205,7 @@ export class NavigateService implements OnInit, OnDestroy {
   }
 
   //show ongoing events
-  onOngoingEvents():void {
+  onOngoingEvents(): void {
     this.showOngoingEvents.set(true)
     this.showPastEvents.set(false)
     this.showUpcomingEvents.set(false)

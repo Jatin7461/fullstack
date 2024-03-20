@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgToastService } from 'ng-angular-popup';
 import { DataService } from '../data.service';
 import { NavigateService } from '../navigate.service';
 
@@ -12,7 +13,7 @@ export class HeaderComponent implements OnInit {
 
 
 
-  constructor(public navigateService: NavigateService, private dataService: DataService, private router: Router) { }
+  constructor(public navigateService: NavigateService, private dataService: DataService, private router: Router, private toast: NgToastService) { }
   ngOnInit(): void {
 
     //when page is refreshed update header if user is logged in 
@@ -27,7 +28,7 @@ export class HeaderComponent implements OnInit {
   }
 
   // when user logs out
-  onLogout():void {
+  onLogout(): void {
 
     //empty all the events array
     this.navigateService.pastEventsList = ([])
@@ -47,13 +48,17 @@ export class HeaderComponent implements OnInit {
     this.dataService.OrgEvents.set([])
 
 
+    //show toast message when loging out
+    this.toast.success({ "detail": "Login Successful", duration: 1500, "summary": "Login Successful" })
+
+
     //empty the local storage
     localStorage.clear();
 
   }
 
   //go to homepage
-  goHome():void{
+  goHome(): void {
 
     //update header and to home page
     this.navigateService.showLogout = false;
