@@ -20,7 +20,7 @@ export class DataService {
   OrgEvents = signal([]);
 
 
-  headers = { headers: { authorization: localStorage.getItem('token') } }
+  headers = { headers: { authorization: sessionStorage.getItem('token') } }
 
 
   constructor(private httpClient: HttpClient) { }
@@ -43,13 +43,13 @@ export class DataService {
 
   //api call to create a new event
   addEvent(event: any): Observable<any> {
-    return this.httpClient.post("http://localhost:4000/event-api/events", event, { headers: { authorization: localStorage.getItem('token') } });
+    return this.httpClient.post("http://localhost:4000/event-api/events", event, { headers: { authorization: sessionStorage.getItem('token') } });
   }
 
   //api call to get all the events
   getEvents(): Observable<any> {
-    this.headers.headers.authorization = localStorage.getItem('token')
-    return this.httpClient.get<any>("http://localhost:4000/event-api/events", { headers: { authorization: localStorage.getItem('token') } });
+    this.headers.headers.authorization = sessionStorage.getItem('token')
+    return this.httpClient.get<any>("http://localhost:4000/event-api/events", { headers: { authorization: sessionStorage.getItem('token') } });
   }
 
   //api call to get user with given email
@@ -79,7 +79,7 @@ export class DataService {
   updateUserWithId(id: any, user: any): Observable<any> {
     let url = `http://localhost:4000/user-api/users/${id}`;
 
-    return this.httpClient.put(url, user, { headers: { authorization: localStorage.getItem('token') } })
+    return this.httpClient.put(url, user, { headers: { authorization: sessionStorage.getItem('token') } })
 
   }
 
@@ -87,14 +87,14 @@ export class DataService {
   deleteEventWithId(id: string) :Observable<any>{
 
     let url = `http://localhost:4000/event-api/events/${id}`;
-    return this.httpClient.delete(url, { headers: { authorization: localStorage.getItem('token') } });
+    return this.httpClient.delete(url, { headers: { authorization: sessionStorage.getItem('token') } });
 
   }
 
   //api call to update event with given id
   updateEvent(id: string, event: any):Observable<any> {
     let url = `http://localhost:4000/event-api/events/${id}`;
-    return this.httpClient.put(url, event, { headers: { authorization: localStorage.getItem('token') } });
+    return this.httpClient.put(url, event, { headers: { authorization: sessionStorage.getItem('token') } });
   }
 
 }

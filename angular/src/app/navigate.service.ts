@@ -96,7 +96,8 @@ export class NavigateService implements OnInit, OnDestroy {
           //when organization credentials are correct
           else {
             //set token in local storage
-            localStorage.setItem('token', res.token)
+            //set token in session storage
+            sessionStorage.setItem('token', res.token)
             //set company name
             this.companyName.set(res.payload.name);
             //set sign in error notification signal
@@ -106,7 +107,7 @@ export class NavigateService implements OnInit, OnDestroy {
             this.showLogout = true;
             this.showSignIn = false;
             this.showSignUp = false;
-            localStorage.setItem('companyName', res.payload.name)
+            sessionStorage.setItem('companyName', res.payload.name)
 
             //show toast message when organization login is successful
             this.toast.success({ "detail": "Login Successful", duration: 1500, "summary": "Login Successful" })
@@ -137,8 +138,8 @@ export class NavigateService implements OnInit, OnDestroy {
 
             let token = res.token;
             //set token and user id in local storage
-            localStorage.setItem('token', token)
-            localStorage.setItem('userId', res.payload._id)
+            sessionStorage.setItem('token', token)
+            sessionStorage.setItem('userId', res.payload._id)
 
             //get all the events which user has subscribed to and save it in data service signals
             this.getEventsObs$ = this.dataService.getEvents().subscribe({
@@ -153,7 +154,7 @@ export class NavigateService implements OnInit, OnDestroy {
                 this.dataService.OrgEvents.set(res.payload);
                 this.dataService.userEvents.set(arr);
 
-                localStorage.setItem('orgEvents', JSON.stringify(res.payload))
+                sessionStorage.setItem('orgEvents', JSON.stringify(res.payload))
                 //set header buttons
                 this.showLogout = true;
                 this.showSignIn = false;

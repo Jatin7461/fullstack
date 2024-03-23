@@ -47,6 +47,7 @@ export class EventsComponent implements OnInit, OnDestroy {
     this.getEventsObs$ = this.dataService.getEvents().subscribe({
       next: (res) => {
 
+
         //create local events array used to separate past,upcoming and ongoing events
         let pastList = []
         let upcomingList = []
@@ -54,9 +55,12 @@ export class EventsComponent implements OnInit, OnDestroy {
 
         //get the current data
         let currDate = new Date().toISOString().slice(0, 10);
-        
+
         //iterate through events and separate them in their respective arrays
         for (let event of res.payload) {
+
+          //if the event is not for the same organization then dont display
+          if (event['company'] !== sessionStorage.getItem('companyName')) continue
 
           //if event is today
           if (event.eventDate === currDate) {

@@ -5,6 +5,7 @@ import { DataService } from '../data.service';
 import { NavigateService } from '../navigate.service';
 import { EditEventService } from '../edit-event.service';
 import { Subscription } from 'rxjs';
+import { NgToastService } from 'ng-angular-popup';
 
 @Component({
   selector: 'app-create-event',
@@ -42,7 +43,7 @@ export class CreateEventComponent implements OnInit, OnDestroy {
 
 
   constructor(private dataService: DataService,
-    private router: Router, private navigateService: NavigateService, private editEventService: EditEventService) { }
+    private router: Router, private navigateService: NavigateService, private editEventService: EditEventService, private toast: NgToastService) { }
 
 
 
@@ -67,13 +68,16 @@ export class CreateEventComponent implements OnInit, OnDestroy {
   }
 
   //update event function
-  updateEvent() :void{
+  updateEvent(): void {
     //fetch event form inputs
     let { eventName, eventDate, location, startTime, endTime } = this.eventDetails.value
 
     //update the event
     this.updateEventObs$ = this.dataService.updateEvent(this.editEventService.eventId(), { "company": this.navigateService.companyName(), eventName, eventDate, location, startTime, endTime }).subscribe({
       next: (res) => {
+
+        this.toast.success({ "detail": "Event Updated", duration: 1500, "summary": "Event Updated" })
+
         //navigate back to company component
         this.router.navigate(['company']);
       },
@@ -85,7 +89,7 @@ export class CreateEventComponent implements OnInit, OnDestroy {
 
 
   //create new event
-  onCreateEvent():void {
+  onCreateEvent(): void {
 
     //fetch event form inputs
     let { eventName, eventDate, location, startTime, endTime } = this.eventDetails.value
@@ -110,6 +114,10 @@ export class CreateEventComponent implements OnInit, OnDestroy {
     //add a new event and subscribe
     this.addEventObs$ = this.dataService.addEvent({ "company": this.navigateService.companyName(), eventName, eventDate, location, startTime, endTime }).subscribe({
       next: (res) => {
+
+        this.toast.success({ "detail": "Event Added", duration: 1500, "summary": "Event Added" })
+
+
         //navigate back to company component
         this.router.navigate(['company'])
       },

@@ -17,11 +17,11 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
 
     //when page is refreshed update header if user is logged in 
-    if (localStorage.getItem('token')) {
+    if (sessionStorage.getItem('token')) {
       this.navigateService.showLogout = true;
       this.navigateService.showSignIn = false;
       this.navigateService.showSignUp = false;
-      this.navigateService.companyName.set(localStorage.getItem('companyName'))
+      this.navigateService.companyName.set(sessionStorage.getItem('companyName'))
     }
 
 
@@ -49,11 +49,11 @@ export class HeaderComponent implements OnInit {
 
 
     //show toast message when loging out
-    this.toast.success({ "detail": "Login Successful", duration: 1500, "summary": "Login Successful" })
+    this.toast.success({ "detail": "Logout Successful", duration: 1500, "summary": "Logout Successful" })
 
 
     //empty the local storage
-    localStorage.clear();
+    sessionStorage.clear()
 
   }
 

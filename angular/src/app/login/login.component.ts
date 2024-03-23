@@ -46,19 +46,25 @@ export class LoginComponent {
 
   //change sign in as user or organization
   changeSignUpAs(): void {
+
+    //hide the login if any error is showing
     this.showError.set(false)
+
+    //go to changeSignupAs function in navigate service
     this.navigateService.changeSignUpAs();
   }
 
   //when sign in is clicked
   onSignIn(): void {
 
+    //if login details are invalid
     if (!this.loginDetails.valid) {
       this.toast.error({ duration: 1500, detail: "Invalid details", summary: "Invalid details" })
       this.showError.set(true)
       return;
     }
 
+    //login details are valid --------> go to navigate service onSignIn function
     let { email, pass } = this.loginDetails.value
     this.navigateService.onSignIn(email, pass);
   }

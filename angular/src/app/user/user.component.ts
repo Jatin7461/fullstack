@@ -10,38 +10,53 @@ import { DataService } from '../data.service';
 })
 export class UserComponent implements OnInit, OnDestroy {
 
-
+  //subscription variable
   getUserWithIdObs$: Subscription
 
+  //signals used to store user events and org events
   userEvents: any = signal([])
   OrgEvents = signal([])
 
+  //boolean variables used to show/hide events tabs
   yourEvents = true;
   upcomingEvents = false;
 
+
+  //inject services
   dataService = inject(DataService)
   router = inject(Router)
 
   ngOnInit(): void {
+
+    //initialize the signals
     this.userEvents = this.dataService.userEvents
     this.OrgEvents = this.dataService.OrgEvents;
 
+
+    //when refreshed restore the user id
     if (this.dataService.userId() === '') {
-      this.dataService.userId.set(localStorage.getItem('userId'));
+      this.dataService.userId.set(sessionStorage.getItem('userId'));
     }
+
+    //api call to get the user with id
     this.getUserWithIdObs$ = this.dataService.getUserWithId(this.dataService.userId()).subscribe({
       next: (res) => {
 
+        //if token expired then redirect to home page
         if (res.message === "Unauthorised access") {
           this.router.navigate(['/home'])
           return;
         }
 
-
+        //store event id list in a local variable
         let eventIdList = res.payload.events
 
         let eventsArr: any = [];
-        this.dataService.OrgEvents.set(JSON.parse(localStorage.getItem('orgEvents')))
+
+        //store the organizations events in a signal when page is refreshed
+        this.dataService.OrgEvents.set(JSON.parse(sessionStorage.getItem('orgEvents')))
+
+        //iterate through all organizations events and store the user events in a local array
         for (let event of this.dataService.OrgEvents()) {
           for (let eve of eventIdList) {
             if (eve == event['_id']) {
@@ -50,6 +65,7 @@ export class UserComponent implements OnInit, OnDestroy {
           }
         }
 
+        //set the user events in a signal
         this.userEvents.set(eventsArr);
 
       },
@@ -60,20 +76,25 @@ export class UserComponent implements OnInit, OnDestroy {
   }
 
 
-  onYourEvents():void {
+  //function to show your events tab
+  onYourEvents(): void {
     this.yourEvents = true;
     this.upcomingEvents = false;
   }
 
-  onUpcomingEvents():void {
+  //function to show upcoming events tab
+  onUpcomingEvents(): void {
     this.yourEvents = false;
     this.upcomingEvents = true
   }
 
+  //on destroy
   ngOnDestroy(): void {
-    // throw new Error('Method not implemented.');
-    localStorage.clear()
+  //clear the session storage
+    sessionStorage.clear();
 
+
+    //unsubscribe the subscriptions
     if (this.getUserWithIdObs$)
       this.getUserWithIdObs$.unsubscribe();
   }

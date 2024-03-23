@@ -39,27 +39,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   addUser$: Subscription
 
 
-  file: File;
-  fileName: String = '';
 
-  toast = inject(NgToastService);
-  constructor(private navigateService: NavigateService, private dataService: DataService, private router: Router) {
-  }
-
-  ngOnInit(): void {
-
-    //know whether user is registering or organization
-    this.signUpAs = this.navigateService.signUpAs
-    this.signUpFlag = this.navigateService.signUpFlag
-
-
-    //set the login, logout
-    this.navigateService.showLogout = false;
-    this.navigateService.showSignIn = true;
-    this.navigateService.showSignUp = true;
-
-
-  }
 
   //form group for organization registeration
   orgSignUpDetails = new FormGroup({
@@ -82,6 +62,26 @@ export class RegisterComponent implements OnInit, OnDestroy {
   signUpAs = signal('')
   signUpFlag = signal(true);
   placeholder = signal('')
+
+  toast = inject(NgToastService);
+  constructor(private navigateService: NavigateService, private dataService: DataService, private router: Router) {
+  }
+
+
+  ngOnInit(): void {
+
+    //know whether user is registering or organization
+    this.signUpAs = this.navigateService.signUpAs
+    this.signUpFlag = this.navigateService.signUpFlag
+
+
+    //set the login, logout
+    this.navigateService.showLogout = false;
+    this.navigateService.showSignIn = true;
+    this.navigateService.showSignUp = true;
+
+
+  }
 
   //change sign up as user or organization
   changeSignUpAs(): void {
@@ -147,18 +147,36 @@ export class RegisterComponent implements OnInit, OnDestroy {
     //fetch all the orgs and check if organization with email already exists
     this.getOrgs$ = this.dataService.getOrgs(email).subscribe({
       next: (res) => {
-
+        //if no such organization exists
         if (res.message === "Org not found") {
           //no organization with same email exists -> add the organization
           this.addOrganization$ = this.dataService.addOrganization({ name, email, pass }).subscribe({
             next: (res) => {
-              localStorage.setItem('register', 'success');
-              this.router.navigate(['login']);
+
+              //if organization was successfully added
+              if (res.message === 'new org created') {
+
+                //show toast message registeration successful and navigate to login page
+                this.toast.success({ summary: "Registeration Successful", duration: 1500, detail: "Registeration Successful" })
+
+                sessionStorage.setItem('register', 'success');
+                this.router.navigate(['login']);
+              }
+              else {
+
+                //show toast message that organization already exists
+                this.toast.error({ "detail": "Organization Already Exists", duration: 1500, "summary": "Organization Already Exists" })
+              }
+            },
+            error: (err) => {
+              console.log(err)
             }
           });
-          this.toast.success({ summary: "Registeration Successful", duration: 1500, detail: "Registeration Successful" })
         }
         else {
+          //show toast message that email already exists
+          this.toast.error({ "detail": "Email Already Exists", duration: 1500, "summary": "Email Already Exists" })
+
           //organization with the given email already exists
           this.emailExists = true;
         }
@@ -193,7 +211,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
           //user does not exists -> add user
           this.addUser$ = this.dataService.addUser({ name: firstName + ' ' + lastName, email, pass, events: [] }).subscribe({
             next: (res) => {
-              localStorage.setItem('register', 'success');
+              sessionStorage.setItem('register', 'success');
 
               //show toast message when user registeration is successful
               this.toast.success({ "detail": "Registeration Successful", duration: 1500, "summary": "Registeration Successful" })
@@ -203,6 +221,9 @@ export class RegisterComponent implements OnInit, OnDestroy {
           });
         }
         else {
+          //show toast message that email already exists
+          this.toast.error({ "detail": "Email Already Exists", duration: 1500, "summary": "Email Already Exists" })
+
           //user exists -> don't add the user
           this.userEmailExists = true;
         }
@@ -222,7 +243,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     //return false if email starts with a number
     if (email[0] >= '0' && email[0] <= '9') return false;
 
-    let str = 0, atIndex = 0, len = email.length;
+    let len = email.length;
     let findAt = email.indexOf('@')
     let findDot = email.lastIndexOf('.')
     //return false if there is no @ or .
