@@ -16,6 +16,7 @@ import { EventComponent } from './event/event.component';
 import { HomeComponent } from './home/home.component';
 import { NgToastModule } from 'ng-angular-popup';
 
+
 @NgModule({
   declarations: [
     AppComponent,
