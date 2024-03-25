@@ -24,6 +24,7 @@ const getEmail = async (req, res, next) => {
 
 //user login code
 const userLogin = async (req, res) => {
+
     let userData = req.body, email = userData.email, password = userData.password;
 
     if (!email || !password) {

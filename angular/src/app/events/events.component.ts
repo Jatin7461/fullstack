@@ -16,9 +16,6 @@ export class EventsComponent implements OnInit, OnDestroy {
   showUpcomingEvents = signal(false);
   showOngoingEvents = signal(false);
 
-  pel: any = []
-  uel: any = []
-  oel: any = []
 
 
   //lists of events
@@ -95,15 +92,13 @@ export class EventsComponent implements OnInit, OnDestroy {
         this.ongoingEventsList = this.navigateService.ongoingEventsList
 
 
-        this.uel = upcomingList
-        this.pel = pastList
-        this.oel = ongoingList
-
+       
 
         //set the respective arrays in the navigate service
-        this.navigateService.uel = this.uel
-        this.navigateService.pel = this.pel
-        this.navigateService.oel = this.oel
+        this.navigateService.uel = upcomingList
+        this.navigateService.pel = pastList
+        this.navigateService.oel = ongoingList
+
 
       },
       error: (err) => {
