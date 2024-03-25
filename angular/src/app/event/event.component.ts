@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { EditEventService } from '../edit-event.service';
 import { Subscription } from 'rxjs';
 import { NgToastService } from 'ng-angular-popup';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-event',
@@ -45,7 +46,7 @@ export class EventComponent implements OnInit, OnDestroy {
   }
 
   //executed when edit event button is clicked
-  editEvent(id: string):void {
+  editEvent(id: string): void {
 
     //initialize the event information signals in navigate service 
     this.navigateService.editEvent.set(true);
@@ -62,7 +63,7 @@ export class EventComponent implements OnInit, OnDestroy {
 
 
   //function to remove event from Org
-  removeEventFromOrg(id: any):void {
+  removeEventFromOrg(id: any): void {
 
     //delete the event from events array
     this.removeEventFromOrgObs$ = this.dataService.deleteEventWithId(id).subscribe({
@@ -82,6 +83,9 @@ export class EventComponent implements OnInit, OnDestroy {
 
             //iterate through events and separate them in diff arrays
             for (let event of res.payload) {
+
+              if (event['companyName'] !== sessionStorage.getItem(environment.companyName)) continue;
+
               //if event is today
               if (event.eventDate === currDate) {
                 //get the status of event
@@ -124,7 +128,7 @@ export class EventComponent implements OnInit, OnDestroy {
   }
 
   //remove event from user 
-  removeEventFromUser(id: any):void {
+  removeEventFromUser(id: any): void {
     //get the user object from users database
     this.removeEventFromUserObs$ = this.dataService.getUserWithId(this.dataService.userId()).subscribe({
       next: (res) => {
@@ -167,7 +171,7 @@ export class EventComponent implements OnInit, OnDestroy {
   }
 
 
-  removeEvent(id: any):void {
+  removeEvent(id: any): void {
 
     if (this.navigateService.signUpAs() === 'Organization') {
       this.removeEventFromOrg(id);
@@ -179,7 +183,7 @@ export class EventComponent implements OnInit, OnDestroy {
 
   }
 
-  joinEvent(id: string):void {
+  joinEvent(id: string): void {
     let userId = this.dataService.userId();
 
     //get the user object from users database and update the users event array

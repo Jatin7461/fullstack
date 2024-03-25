@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { map} from 'rxjs';
+import { map } from 'rxjs';
+import { environment } from '../environments/environment';
 
 export const authGuard: CanActivateFn = (route, state) => {
 
@@ -10,12 +11,12 @@ export const authGuard: CanActivateFn = (route, state) => {
   let router = inject(Router)
 
   //get the token from local storage
-  let token = sessionStorage.getItem('token')
+  let token = sessionStorage.getItem(environment.token)
 
   //if token exists then verify the token
   if (token) {
     //make an api call to verify if the token is valid or not
-    return httpClient.post<any>("http://localhost:4000/event-api/verify", { token: token }).pipe(
+    return httpClient.post<any>(environment.verifyTokenURL, { token: token }).pipe(
       map((res) => {
         //if token is valid then return true
         if (res.message === "token valid") {

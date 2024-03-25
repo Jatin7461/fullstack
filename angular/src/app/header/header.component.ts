@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { NgToastService } from 'ng-angular-popup';
 import { DataService } from '../data.service';
 import { NavigateService } from '../navigate.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-header',
@@ -17,11 +18,11 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
 
     //when page is refreshed update header if user is logged in 
-    if (sessionStorage.getItem('token')) {
+    if (sessionStorage.getItem(environment.token)) {
       this.navigateService.showLogout = true;
       this.navigateService.showSignIn = false;
       this.navigateService.showSignUp = false;
-      this.navigateService.companyName.set(sessionStorage.getItem('companyName'))
+      this.navigateService.companyName.set(sessionStorage.getItem(environment.companyName))
     }
 
 

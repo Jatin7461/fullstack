@@ -2,6 +2,7 @@ import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { DataService } from '../data.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-user',
@@ -35,7 +36,7 @@ export class UserComponent implements OnInit, OnDestroy {
 
     //when refreshed restore the user id
     if (this.dataService.userId() === '') {
-      this.dataService.userId.set(sessionStorage.getItem('userId'));
+      this.dataService.userId.set(sessionStorage.getItem(environment.userId));
     }
 
     //api call to get the user with id
@@ -54,7 +55,7 @@ export class UserComponent implements OnInit, OnDestroy {
         let eventsArr: any = [];
 
         //store the organizations events in a signal when page is refreshed
-        this.dataService.OrgEvents.set(JSON.parse(sessionStorage.getItem('orgEvents')))
+        this.dataService.OrgEvents.set(JSON.parse(sessionStorage.getItem(environment.orgEvents)))
 
         //iterate through all organizations events and store the user events in a local array
         for (let event of this.dataService.OrgEvents()) {
@@ -90,7 +91,7 @@ export class UserComponent implements OnInit, OnDestroy {
 
   //on destroy
   ngOnDestroy(): void {
-  //clear the session storage
+    //clear the session storage
     sessionStorage.clear();
 
 

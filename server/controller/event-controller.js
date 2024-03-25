@@ -62,7 +62,7 @@ const verify = async (req, res) => {
     const token = bearerToken.split(' ')[1];
 
     //verify token
-    let decodedToken = jwt.verify(token, process.env.SECRET_KEY);
+    jwt.verify(token, process.env.SECRET_KEY);
     res.send({ message: "token valid" })
 
 }

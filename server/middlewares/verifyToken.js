@@ -7,7 +7,7 @@ function verifyToken(req, res, next) {
     //if token exists then verify it 
     if (bearerToken) {
         const token = bearerToken.split(' ')[1];
-        let decodedToken = jwt.verify(token, process.env.SECRET_KEY);
+        jwt.verify(token, process.env.SECRET_KEY);
         next()
     }
     //token does not exists

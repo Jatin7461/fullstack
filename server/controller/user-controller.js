@@ -16,11 +16,11 @@ const getEmail = async (req, res, next) => {
     let user = await User.findOne({ email: emid })
     //if user does not exists
     if (!user) {
-        res.send({message:"User Not Found", payload: null })
+        res.send({ message: "User Not Found", payload: null })
     }
     //if user exists
     else {
-        res.send({message:"User Found", payload: user })
+        res.send({ message: "User Found", payload: user })
     }
 
 }
@@ -130,7 +130,7 @@ const updateUser = async (req, res, next) => {
     //fetch details
     const user = req.body
     //update details
-    let dbRes = await User.updateOne({ _id: user._id }, { $set: { ...user } })
+    await User.updateOne({ _id: user._id }, { $set: { ...user } })
 
 
     res.status(200).send({ message: "User Updated" });

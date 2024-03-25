@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DataService } from '../data.service';
 import { NavigateService } from '../navigate.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-events',
@@ -30,6 +31,8 @@ export class EventsComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
+
+    console.log('getting events')
     //empty the arrays which are used to display to avoid repetition of data
     this.pastEventsList.set([])
     this.upcomingEventsList.set([])
@@ -57,7 +60,7 @@ export class EventsComponent implements OnInit, OnDestroy {
         for (let event of res.payload) {
 
           //if the event is not for the same organization then dont display
-          if (event['company'] !== sessionStorage.getItem('companyName')) continue
+          if (event['company'] !== sessionStorage.getItem(environment.companyName)) continue
 
           //if event is today
           if (event.eventDate === currDate) {
@@ -92,7 +95,7 @@ export class EventsComponent implements OnInit, OnDestroy {
         this.ongoingEventsList = this.navigateService.ongoingEventsList
 
 
-       
+
 
         //set the respective arrays in the navigate service
         this.navigateService.uel = upcomingList
