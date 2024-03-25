@@ -49,7 +49,7 @@ export class NavigateService implements OnInit, OnDestroy {
   //string signal used to differentiate between user and organization
   signUpAs = signal("Organization")
 
-  placeholder = signal('')
+  // placeholder = signal('')
 
   //used to differentiate between registeration form
   signUpFlag = signal(true);
@@ -65,7 +65,7 @@ export class NavigateService implements OnInit, OnDestroy {
     //using boolean signal to differentiate between user and organization
     if (this.signUpFlag()) {
       this.signUpAs.set("User")
-      this.placeholder.set("User Name")
+      // this.placeholder.set("User Name")
     }
     else {
       this.signUpAs.set("Organization")
@@ -95,7 +95,6 @@ export class NavigateService implements OnInit, OnDestroy {
           }
           //when organization credentials are correct
           else {
-            //set token in local storage
             //set token in session storage
             sessionStorage.setItem('token', res.token)
             //set company name

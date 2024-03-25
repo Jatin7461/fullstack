@@ -21,10 +21,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
   passMatch: boolean = false;
 
   // org and user email validation variables for ngIf
-  emailExists = false;
-  userEmailExists = false;
-  invalidEmail = false;
-  userEmailInvalid = false;
+  emailExists:boolean = false;
+  userEmailExists:boolean = false;
+  invalidEmail:boolean = false;
+  userEmailInvalid:boolean = false;
 
   //user register form variables for ngIF
   userNameRequired: boolean = false;
@@ -61,7 +61,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   //signals used to differentiate between user and organization
   signUpAs = signal('')
   signUpFlag = signal(true);
-  placeholder = signal('')
+  // placeholder = signal('')
 
   toast = inject(NgToastService);
   constructor(private navigateService: NavigateService, private dataService: DataService, private router: Router) {
@@ -99,7 +99,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
       if (!this.orgSignUpDetails.valid) {
         //show a toast message
         this.toast.error({ "detail": "Invalid details", "duration": 1500, "summary": "Invalid details" })
-        //validate each value individually
+        //validate each value individually and show the error messages
         this.validateOrgForm(this.orgSignUpDetails.value)
         return;
       }
@@ -114,7 +114,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
       if (!this.userSignUpDetails.valid) {
         //show error toast message
         this.toast.error({ "detail": "Invalid details", "duration": 1500, "summary": "Invalid details" })
-        //validate each input individually
+        //validate each input individually and show the error messages
         this.validateUserForm(this.userSignUpDetails.value)
         return
       }
@@ -159,7 +159,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
                 //show toast message registeration successful and navigate to login page
                 this.toast.success({ summary: "Registeration Successful", duration: 1500, detail: "Registeration Successful" })
 
-                sessionStorage.setItem('register', 'success');
                 this.router.navigate(['login']);
               }
               else {
@@ -274,6 +273,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     }
     if (pass && pass === confirmPass) {
       this.passwordRequired = false;
+      this.passMatch = false;
     }
 
 
