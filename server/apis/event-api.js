@@ -24,7 +24,7 @@ eventApp.put('/events/:id', verifyToken, expressAsyncHandler(updateEvent))
 //delete an event
 eventApp.delete('/events/:id', verifyToken, expressAsyncHandler(deleteEvent))
 
-
+//verify token
 eventApp.post('/verify', expressAsyncHandler(verify))
 
 //export event router

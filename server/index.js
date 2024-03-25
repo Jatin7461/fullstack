@@ -1,6 +1,7 @@
 //import express
 const express = require('express');
 const app = express()
+require('dotenv').config()
 
 //import path module
 const path = require('path')
@@ -47,7 +48,7 @@ app.use((req, res, next) => {
 
 
 //binds and listens the app to the specific port
-app.listen(4000, () => {
-    console.log("listenting on port", 4000)
+app.listen(process.env.PORT, () => {
+    console.log("listenting on port", process.env.PORT)
 })
 

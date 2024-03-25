@@ -21,7 +21,7 @@ const addEvent = async (req, res, next) => {
 
 //update an event
 const updateEvent = async (req, res, next) => {
-    
+
     //get the event and event id from request body and reqest params respectively
     let newEvent = req.body;
     let eventId = req.params.id;
@@ -57,10 +57,12 @@ const deleteEvent = async (req, res, next) => {
 
 const verify = async (req, res) => {
 
+//fetch token
     let bearerToken = req.body.token
     const token = bearerToken.split(' ')[1];
 
-    let decodedToken = jwt.verify(token, 'abcdefgh');
+    //verify token
+    let decodedToken = jwt.verify(token, process.env.SECRET_KEY);
     res.send({ message: "token valid" })
 
 }

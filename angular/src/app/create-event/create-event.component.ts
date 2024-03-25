@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, signal } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DataService } from '../data.service';
 import { NavigateService } from '../navigate.service';
@@ -34,11 +34,11 @@ export class CreateEventComponent implements OnInit, OnDestroy {
 
   //event form group
   eventDetails = new FormGroup({
-    eventName: new FormControl(''),
-    eventDate: new FormControl(''),
-    location: new FormControl(''),
-    startTime: new FormControl(''),
-    endTime: new FormControl('')
+    eventName: new FormControl('', Validators.required),
+    eventDate: new FormControl('', Validators.required),
+    location: new FormControl('', Validators.required),
+    startTime: new FormControl('', Validators.required),
+    endTime: new FormControl('', Validators.required)
   })
 
 
@@ -91,6 +91,12 @@ export class CreateEventComponent implements OnInit, OnDestroy {
   //create new event
   onCreateEvent(): void {
 
+    this.resetErrorMessages()
+
+    if (!this.eventDetails.valid) {
+      this.toast.error({ "duration": 1500, "summary": "Invalid Details", "detail": "Invalid Details" })
+    }
+
     //fetch event form inputs
     let { eventName, eventDate, location, startTime, endTime } = this.eventDetails.value
 
@@ -127,6 +133,15 @@ export class CreateEventComponent implements OnInit, OnDestroy {
     });
 
 
+  }
+
+  //reset the error boolean values to false
+  resetErrorMessages(): void {
+    this.eventNameRequired = false;
+    this.eventDateRequired = false
+    this.eventLocationRequired = false
+    this.eventStartTimeRequired = false
+    this.eventEndTimeRequired = false;
   }
 
 

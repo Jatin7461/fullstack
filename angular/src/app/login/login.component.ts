@@ -28,6 +28,7 @@ export class LoginComponent {
 
   ngOnInit(): void {
 
+
     //signal values to differentiate between user and organization
     this.signUpAs = this.navigateService.signUpAs
     this.signUpFlag = this.navigateService.signUpFlag
