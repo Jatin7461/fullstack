@@ -1,5 +1,7 @@
 <div class="formContainer">
 
+
+    <!-- organization register form -->
     <div class="registerForm" *ngIf="signUpFlag()">
 
 
@@ -11,11 +13,9 @@
 
                 <div class="form-group col-12 py-4">
 
-                    <!-- <label class="form-label">{{signUpAs()}} Name</label> -->
                     <div>
                         <input type="text" class="form-control" formControlName="name" placeholder="Organization Name"
                             required>
-                        <!-- <p>This field is required</p> -->
                         <small *ngIf="orgNameRequired">
                             <svg xmlns="http://www.w3.org/2000/svg" height="14" width="14"
                                 viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
@@ -28,7 +28,6 @@
                 </div>
                 <div class="form-group col-12 pb-4">
 
-                    <!-- <label class="form-label">Email</label> -->
                     <div>
                         <input type="email" class="form-control" formControlName="email" placeholder="Email" required>
                         <small *ngIf="emailRequired">
